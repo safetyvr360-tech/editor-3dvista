@@ -1,0 +1,14 @@
+<div id="ux-carga" role="status" aria-live="polite" aria-label="Cargando el recorrido de {{nombre}}">
+  <div class="ux-carga-fondo"></div>
+  <div class="ux-carga-centro">
+    <img class="ux-carga-logo" src="ux/logo-redondo.png" alt="{{nombre}}" width="148" height="148">
+    <p class="ux-carga-sub">{{subtitulo}}</p>
+    <div class="ux-carga-barra"><span id="ux-carga-progreso"></span></div>
+    <p class="ux-carga-dato"><span id="ux-carga-pct">0</span>% · <span id="ux-carga-texto">Preparando el recorrido</span></p>
+  </div>
+  <ul class="ux-carga-leyenda" aria-label="Colores de los lotes">
+    <li><i class="ux-p-verde"></i>Disponible</li>
+    <li><i class="ux-p-naranja"></i>Reservado</li>
+    <li><i class="ux-p-rojo"></i>Vendido</li>
+  </ul>
+</div>

@@ -1,0 +1,94 @@
+{
+  "nombre": "Cayman Creek",
+  "subtitulo": "Complejo campestre · Km 30 Vía al Mar",
+  "titulo": "Cayman Creek · Complejo campestre · Km 30 Vía al Mar",
+  "motor": "1.0",
+
+  "lotes": {
+    "textoGrupo": "Manzana",
+    "grupos": {
+      "A": [[1, 5], [24, 28]],
+      "B": [[6, 14], [29, 29]],
+      "C": [[30, 45]],
+      "D": [[15, 23]]
+    },
+    "coloresGrupos": { "A": "#7fd1a8", "B": "#3fb27a", "C": "#f0a06a", "D": "#ef8fb0" }
+  },
+
+  "lugares": {
+    "LOBBY": "Lobby",
+    "ZONA COMERCIAL": "Zona comercial",
+    "VIA AL MAR - BAQ": "Vía al mar · BAQ",
+    "VIA AL MAR - CTG": "Vía al mar · CTG",
+    "PUERTO VELERO": "Puerto Velero",
+    "MIRADOR": "Mirador",
+    "FLUJO TEMPORAL": "Arroyo estacional",
+    "PARQUE CAMPESTRE": "Parque campestre",
+    "CAMPANOS": "Pista Los Campanos",
+    "CORRAL DE SAN LUIS": "Corral de San Luis"
+  },
+
+  "destinos": {
+    "0": "Vista aérea 1",
+    "2": "Vista aérea 2",
+    "3": "Barranquilla",
+    "4": "Cartagena",
+    "5": "Puerto Velero",
+    "6": "Pista Los Campanos"
+  },
+  "volver": {
+    "texto": "Volver a la vista aérea",
+    "desde": [
+      "panorama_B04FCE36_A7B3_B456_41D4_673BB54679F7",
+      "panorama_B1856646_A7B2_B436_41D2_094F29A04B0C",
+      "panorama_B18E1EAD_A7B5_947A_41DA_06FE9665C992",
+      "panorama_B0096D2A_A7B6_947E_41DE_84F577F81F4D"
+    ]
+  },
+
+  "panoramas": {
+    "panorama_357F5D76_3823_7B2D_41C6_9C951179D2D9": "Vista aérea 1",
+    "panorama_44296E0A_5B80_C2E4_41C9_4F6321F2545C": "Vista aérea 2",
+    "panorama_B04FCE36_A7B3_B456_41D4_673BB54679F7": "Barranquilla",
+    "panorama_B1856646_A7B2_B436_41D2_094F29A04B0C": "Cartagena",
+    "panorama_B18E1EAD_A7B5_947A_41DA_06FE9665C992": "Puerto Velero",
+    "panorama_B0096D2A_A7B6_947E_41DE_84F577F81F4D": "Pista Los Campanos"
+  },
+
+  "camaras": {
+    "panorama_357F5D76_3823_7B2D_41C6_9C951179D2D9": [-35.5, -20],
+    "panorama_44296E0A_5B80_C2E4_41C9_4F6321F2545C": [-18.5, -24]
+  },
+  "camaraMovilPitch": -12,
+
+  "apagarOverlays": [
+    "overlay_2FCA4148_5A81_C165_41D5_DBBAD275FEAD",
+    "overlay_25F15A35_5A80_432C_41C5_DA683914AB8B"
+  ],
+
+  "pielVieja": {
+    "contenedores": [
+      "Container_705CB726_3F2B_148E_4191_093D90E6482C",
+      "Container_6653B3E3_3F6F_1386_413A_1F440C77CBF2",
+      "Container_66DE94D3_3F27_1586_41B9_14A99FC92671"
+    ],
+    "ocultarContenedores": ["093D90E6482C", "1F440C77CBF2"],
+    "imagenes": ["42C931DC", "6D9F35BF"]
+  },
+
+  "ux": {
+    "hojaCsv": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqW01S96H2rl6cgt8AJlpqagGyFCubqs-04ld7Dud4fE-6-_UpIftRraBKjXjelcGgQF4hYXGPxzVs/pub?output=csv",
+    "refrescoSegundos": 15,
+    "whatsapp": "573054443180",
+    "telefonoVisible": "305 444 3180",
+    "anioProyeccion": 2028,
+    "rentabilidadProyectada": "112,5 %",
+    "separacion": "$5.000.000",
+    "lotesDisponiblesSinHoja": 38
+  },
+
+  "marca": {
+    "logoRedondo": "marca/logo-redondo.png",
+    "logoBlanco": "marca/logo-blanco.png"
+  }
+}

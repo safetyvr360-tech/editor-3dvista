@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EDITOR · Motor 3DVista</title>
+<meta name="description" content="Convierta una exportación de 3DVista en un aplicativo de venta de lotes. Pruebe el proceso con Cayman Creek o con su propio recorrido.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Plano de loteo: columna de lectura; el probador de 4 pasos es el centro de la página. */
+:root {
+  --papel: #eef3ee; --hoja: #ffffff; --tinta: #10261d; --tinta-2: #4a6157; --linea: #cfdcd3;
+  --acento: #0f7a63; --acento-2: #0a5c4a; --acento-suave: #d6ece5;
+  --verde: #16a34a; --naranja: #ea800c; --rojo: #c81818; --bien: #15803d; --mal: #b91c1c;
+  --sombra: 0 1px 2px rgba(16, 38, 29, .06), 0 8px 24px rgba(16, 38, 29, .08);
+  --f-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-dato: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #0c1714; --hoja: #12211c; --tinta: #e3eee8; --tinta-2: #9db3a8; --linea: #24372f;
+    --acento: #4cc7a6; --acento-2: #7fdcc2; --acento-suave: #173a31; --verde: #3ccf72; --naranja: #f4a04a; --rojo: #f06a6a;
+    --bien: #4ade80; --mal: #f87171; --sombra: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #0c1714; --hoja: #12211c; --tinta: #e3eee8; --tinta-2: #9db3a8; --linea: #24372f;
+  --acento: #4cc7a6; --acento-2: #7fdcc2; --acento-suave: #173a31; --verde: #3ccf72; --naranja: #f4a04a; --rojo: #f06a6a;
+  --bien: #4ade80; --mal: #f87171; --sombra: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 17px/1.6 var(--f-texto); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+img { max-width: 100%; }
+.envoltura { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 72px; display: grid; gap: 80px; }
+h1, h2, h3 { font-family: var(--f-titulo); line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.6rem); font-weight: 800; letter-spacing: -.02em; max-width: 19ch; }
+h2 { font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 700; letter-spacing: -.01em; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+.etiqueta { font: 600 .74rem/1 var(--f-dato); letter-spacing: .12em; text-transform: uppercase; color: var(--acento); }
+code { font-family: var(--f-dato); font-size: .86em; background: var(--acento-suave); padding: .08em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--acento); }
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+.boton { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 700 1rem/1.2 var(--f-texto); padding: 14px 20px; border-radius: 12px; border: 2px solid var(--acento); background: var(--acento); color: var(--papel); cursor: pointer; text-decoration: none; text-align: center; }
+.boton:hover { background: var(--acento-2); border-color: var(--acento-2); }
+.boton.sec { background: transparent; color: var(--acento); }
+.boton.sec:hover { background: var(--acento-suave); }
+.boton.chico { padding: 9px 14px; font-size: .92rem; border-radius: 10px; }
+.boton[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* cabecera */
+.cabecera { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.marca { display: flex; align-items: center; gap: 10px; font: 800 1.05rem/1 var(--f-titulo); color: var(--tinta); text-decoration: none; }
+.marca i { width: 30px; height: 30px; border-radius: 8px; background: conic-gradient(var(--verde) 0 33%, var(--naranja) 0 66%, var(--rojo) 0); display: block; }
+.nav { display: flex; gap: 18px; flex-wrap: wrap; font-weight: 600; font-size: .95rem; }
+.nav a { color: var(--tinta-2); text-decoration: none; }
+.nav a:hover { color: var(--acento); }
+
+/* inicio */
+.inicio { display: grid; gap: 22px; }
+.entrada { font-size: 1.15rem; color: var(--tinta-2); }
+.acciones { display: flex; flex-wrap: wrap; gap: 12px; }
+.estados { display: flex; flex-wrap: wrap; gap: 10px 18px; list-style: none; padding: 0; margin: 0; font-size: .95rem; }
+.estados li { display: flex; align-items: center; gap: 8px; }
+.estados i { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--tinta); }
+
+/* comparador */
+.comparador { position: relative; border-radius: 14px; overflow: hidden; box-shadow: var(--sombra); background: var(--hoja); aspect-ratio: 1440 / 900; max-width: 100%; user-select: none; touch-action: pan-y; }
+.comparador img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.comparador .antes { clip-path: inset(0 calc(100% - var(--corte, 50%)) 0 0); }
+.comparador .raya { position: absolute; top: 0; bottom: 0; left: var(--corte, 50%); width: 3px; margin-left: -1.5px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25); pointer-events: none; }
+.comparador .tirador { position: absolute; top: 50%; left: var(--corte, 50%); width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; background: #fff; color: #10261d; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.35); pointer-events: none; font: 700 15px/1 var(--f-dato); }
+.comparador .rotulo { position: absolute; top: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(9, 22, 17, .78); color: #fff; font: 600 .72rem/1 var(--f-dato); letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
+.comparador .r-antes { left: 12px; } .comparador .r-despues { right: 12px; }
+.comparador input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+
+/* probador */
+.probador { display: grid; gap: 22px; }
+.pasos-barra { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; list-style: none; padding: 0; margin: 0; counter-reset: p; }
+.pasos-barra li { counter-increment: p; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--hoja); border: 1px solid var(--linea); color: var(--tinta-2); font-weight: 600; font-size: .92rem; min-width: 0; }
+.pasos-barra li::before { content: counter(p); flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 700 .85rem/1 var(--f-dato); background: var(--linea); color: var(--tinta); }
+.pasos-barra li[data-estado="actual"] { border-color: var(--acento); color: var(--tinta); }
+.pasos-barra li[data-estado="actual"]::before { background: var(--acento); color: var(--papel); }
+.pasos-barra li[data-estado="hecho"]::before { content: "✓"; background: var(--bien); color: #fff; }
+.panel { background: var(--hoja); border: 1px solid var(--linea); border-radius: 14px; padding: clamp(18px, 3vw, 28px); display: grid; gap: 18px; box-shadow: var(--sombra); min-width: 0; }
+.opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.opcion { border: 1px solid var(--linea); border-radius: 12px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; background: var(--papel); }
+.zona { border: 2px dashed var(--linea); border-radius: 12px; padding: 22px 16px; text-align: center; display: grid; gap: 10px; justify-items: center; transition: border-color .15s, background .15s; }
+.zona.encima { border-color: var(--acento); background: var(--acento-suave); }
+.zona small { color: var(--tinta-2); }
+.estado-carga { font: 600 .95rem/1.4 var(--f-dato); color: var(--acento); }
+.error { color: var(--mal); font-weight: 600; }
+.lista-req { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.lista-req li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: start; }
+.lista-req .marca-r { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 700 .85rem/1 var(--f-dato); color: #fff; margin-top: 1px; }
+.lista-req .si .marca-r { background: var(--bien); } .lista-req .no .marca-r { background: var(--mal); }
+.lista-req small { display: block; color: var(--tinta-2); }
+.veredicto { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; font-weight: 700; }
+.veredicto.si { background: color-mix(in srgb, var(--bien) 14%, transparent); color: var(--bien); }
+.veredicto.no { background: color-mix(in srgb, var(--mal) 14%, transparent); color: var(--mal); }
+.cifras { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.cifras li { border: 1px solid var(--linea); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; background: var(--papel); }
+.cifras b { font: 700 1.5rem/1.1 var(--f-dato); font-variant-numeric: tabular-nums; color: var(--acento); }
+.cifras span { font-size: .85rem; color: var(--tinta-2); }
+.avisos { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.avisos li { border-left: 4px solid var(--naranja); background: var(--papel); padding: 10px 12px; border-radius: 6px; font-size: .95rem; }
+.form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 16px; }
+.campo { display: grid; gap: 6px; min-width: 0; }
+.campo.ancho { grid-column: 1 / -1; }
+.campo label { font-weight: 600; font-size: .92rem; }
+.campo small { color: var(--tinta-2); font-size: .85rem; }
+.campo input, .campo textarea { font: 400 1rem/1.4 var(--f-texto); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--linea); background: var(--papel); color: var(--tinta); width: 100%; min-width: 0; }
+.campo textarea { font-family: var(--f-dato); font-size: .9rem; min-height: 110px; resize: vertical; }
+.comparacion { font-size: .95rem; padding: 12px 14px; border-radius: 10px; background: var(--acento-suave); }
+pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); border-radius: 10px; padding: 14px 16px; overflow: auto; max-height: 360px; font: 400 .8rem/1.55 var(--f-dato); color: var(--tinta); max-width: 100%; }
+.fila-botones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.nota { font-size: .9rem; color: var(--tinta-2); }
+.ordenes { display: grid; gap: 10px; counter-reset: o; list-style: none; padding: 0; margin: 0; }
+.ordenes li { counter-increment: o; display: grid; grid-template-columns: 30px 1fr; gap: 10px; min-width: 0; }
+.ordenes li::before { content: counter(o); width: 26px; height: 26px; border-radius: 50%; background: var(--acento-suave); color: var(--acento); display: grid; place-items: center; font: 700 .85rem/1 var(--f-dato); }
+.ordenes li > div { min-width: 0; display: grid; gap: 6px; }
+
+/* proceso y producto */
+.secc { display: grid; gap: 24px; }
+.dos { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch; }
+.caja { background: var(--hoja); border: 1px solid var(--linea); border-radius: 12px; padding: 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.caja .ruta { font: 400 .8rem/1.4 var(--f-dato); color: var(--tinta-2); overflow-wrap: anywhere; }
+.caja ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.flecha { display: grid; place-items: center; color: var(--acento); font: 700 .78rem/1.3 var(--f-dato); text-align: center; letter-spacing: .04em; text-transform: uppercase; }
+.flecha svg { width: 64px; height: 24px; }
+.motor-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.motor-lista li { background: var(--hoja); border: 1px solid var(--linea); border-radius: 10px; padding: 14px; display: grid; gap: 4px; }
+.motor-lista b { font: 700 1.25rem/1 var(--f-dato); color: var(--acento); }
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; }
+.filtros button { font: 600 .9rem/1 var(--f-texto); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--linea); background: var(--hoja); color: var(--tinta); cursor: pointer; }
+.filtros button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+.pieza { margin: 0; background: var(--hoja); border: 1px solid var(--linea); border-radius: 12px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
+.pieza button { all: unset; cursor: zoom-in; display: block; aspect-ratio: 16 / 10; background: var(--papel); }
+.pieza img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.pieza.alta img { object-fit: contain; }
+.pieza button:focus-visible { outline: 3px solid var(--acento); outline-offset: -3px; }
+.pieza figcaption { padding: 12px 14px 14px; display: grid; gap: 4px; font-size: .92rem; color: var(--tinta-2); }
+.pieza figcaption strong { color: var(--tinta); font-size: 1rem; }
+.visor { position: fixed; inset: 0; z-index: 20; background: rgba(6, 14, 11, .92); display: grid; grid-template-rows: auto 1fr; padding: calc(12px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); gap: 10px; }
+.visor .barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #fff; }
+.visor button { font: 600 .95rem/1 var(--f-texto); background: #fff; color: #10261d; border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+.visor img { width: 100%; height: 100%; object-fit: contain; min-height: 0; }
+.pendientes { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.pendientes li { background: var(--hoja); border: 1px solid var(--linea); border-left: 4px solid var(--naranja); border-radius: 8px; padding: 12px 14px; }
+.pie { font-size: .85rem; color: var(--tinta-2); border-top: 1px solid var(--linea); padding-top: 18px; }
+
+@media (max-width: 760px) {
+  .pasos-barra { grid-template-columns: repeat(2, 1fr); }
+  .opciones, .form, .dos { grid-template-columns: 1fr; }
+  .flecha svg { transform: rotate(90deg); }
+  .envoltura { gap: 60px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pieza button img { transition: transform .35s ease; }
+  .pieza button:hover img { transform: scale(1.03); }
+  .panel.entra { animation: entra .35s ease both; }
+  @keyframes entra { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+<main class="envoltura">
+
+  <header class="cabecera">
+    <a class="marca" href="#inicio"><i aria-hidden="true"></i>EDITOR · Motor 3DVista</a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#probador">Probar</a>
+      <a href="#proceso">Cómo funciona</a>
+      <a href="#resultado">Resultado</a>
+      <a href="cayman-creek/index.htm">Cayman Creek</a>
+    </nav>
+  </header>
+
+  <!-- Inicio -->
+  <section class="inicio" id="inicio" aria-labelledby="t-inicio">
+    <span class="etiqueta">Plataforma EDITOR</span>
+    <h1 id="t-inicio">Su recorrido de 3DVista, convertido en un aplicativo que vende lotes</h1>
+    <p class="entrada">Cada lote se pinta según una hoja de cálculo y, al tocarlo, abre su ficha con WhatsApp. Funciona con cualquier recorrido que marque sus lotes como «rojo N». Vea el proceso completo con Cayman Creek o pruebe el suyo.</p>
+    <div class="acciones">
+      <button type="button" class="boton" id="b-ver-cayman">▶ Ver el proceso con Cayman Creek</button>
+      <button type="button" class="boton sec" id="b-otro">Usar con otro recorrido</button>
+      <a class="boton sec" href="cayman-creek/index.htm" id="b-abrir-cayman">Abrir Cayman Creek terminado</a>
+    </div>
+    <ul class="estados" aria-label="Los tres estados de un lote">
+      <li><i style="background: var(--verde)"></i>Disponible</li>
+      <li><i style="background: var(--naranja)"></i>Reservado</li>
+      <li><i style="background: var(--rojo)"></i>Vendido</li>
+    </ul>
+    <div class="comparador" id="comparador">
+      <img class="despues" src="img/despues.webp" alt="Después: Cayman Creek optimizado, lotes de colores según la hoja y etiquetas nítidas" width="1440" height="900">
+      <img class="antes" src="img/antes.webp" alt="Antes: la misma vista en la exportación original, con la franja vieja y los lotes en blanco" width="1440" height="900">
+      <span class="rotulo r-antes">Antes · exportación</span>
+      <span class="rotulo r-despues">Después · motor</span>
+      <input type="range" id="corte" min="0" max="100" value="50" aria-label="Mover la línea entre antes y después">
+      <span class="raya" aria-hidden="true"></span>
+      <span class="tirador" aria-hidden="true">⇆</span>
+    </div>
+  </section>
+
+  <!-- Probador -->
+  <section class="probador" id="probador" aria-labelledby="t-probador">
+    <span class="etiqueta">Pruébelo</span>
+    <h2 id="t-probador">El proceso, paso a paso</h2>
+    <ol class="pasos-barra" aria-label="Avance">
+      <li id="pb-1" data-estado="actual">Exportación</li>
+      <li id="pb-2">Revisión</li>
+      <li id="pb-3">Configuración</li>
+      <li id="pb-4">Resultado</li>
+    </ol>
+
+    <!-- 1 -->
+    <div class="panel" id="paso-1">
+      <h3>1 · Elija la exportación de 3DVista</h3>
+      <div class="opciones">
+        <div class="opcion">
+          <span class="etiqueta">Ejemplo</span>
+          <h3>Cayman Creek</h3>
+          <p class="nota">Recorrido real de 45 lotes en dos vistas aéreas. Se usa la exportación tal como salió de 3DVista.</p>
+          <button type="button" class="boton" id="b-ejemplo">Usar Cayman Creek como ejemplo</button>
+        </div>
+        <div class="opcion">
+          <span class="etiqueta">Su recorrido</span>
+          <h3>Otro recorrido</h3>
+          <div class="zona" id="zona">
+            <p>Arrastre aquí el <b>.zip</b> de la exportación</p>
+            <small>o</small>
+            <div class="fila-botones" style="justify-content:center">
+              <label class="boton chico sec" for="f-zip">Elegir .zip</label>
+              <label class="boton chico sec" for="f-carpeta">Elegir carpeta</label>
+            </div>
+            <input type="file" id="f-zip" accept=".zip,application/zip" hidden>
+            <input type="file" id="f-carpeta" webkitdirectory multiple hidden>
+            <small>Se revisa aquí, en su navegador: no se sube a ningún lado. Solo se leen los archivos de texto, no las fotos.</small>
+          </div>
+        </div>
+      </div>
+      <p class="estado-carga" id="estado-carga" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- 2 -->
+    <div class="panel" id="paso-2" hidden>
+      <h3>2 · Revisión de compatibilidad · <span id="r-nombre"></span></h3>
+      <div class="veredicto" id="veredicto"></div>
+      <ul class="cifras" id="cifras"></ul>
+      <h3>Lo que el motor necesita</h3>
+      <ul class="lista-req" id="requisitos"></ul>
+      <div id="bloque-avisos"><h3>Para tener en cuenta</h3><ul class="avisos" id="avisos"></ul></div>
+      <div class="fila-botones">
+        <button type="button" class="boton" id="b-a-config">Siguiente: configuración</button>
+        <button type="button" class="boton sec chico" id="b-reiniciar-2">Elegir otra exportación</button>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="panel" id="paso-3" hidden>
+      <h3>3 · Configuración del proyecto</h3>
+      <p class="nota">El analizador propone esta configuración a partir del recorrido. Complete los datos de contacto y revise las manzanas.</p>
+      <div class="comparacion" id="comparacion" hidden></div>
+      <form class="form" id="form" autocomplete="off">
+        <div class="campo"><label for="c-nombre">Nombre del proyecto</label><input id="c-nombre" required></div>
+        <div class="campo"><label for="c-sub">Subtítulo</label><input id="c-sub" placeholder="Complejo campestre · Km 30 Vía al Mar"></div>
+        <div class="campo"><label for="c-wa">WhatsApp (con indicativo)</label><input id="c-wa" inputmode="numeric" placeholder="573001234567"></div>
+        <div class="campo"><label for="c-tel">Teléfono visible</label><input id="c-tel" placeholder="300 123 4567"></div>
+        <div class="campo ancho"><label for="c-hoja">Hoja de Google publicada como CSV</label><input id="c-hoja" placeholder="https://docs.google.com/spreadsheets/…/pub?output=csv"><small>Columna 1: número de lote. Columna 2: Disponible, Reservado o Vendido.</small></div>
+        <div class="campo"><label for="c-anio">Año de la proyección</label><input id="c-anio" inputmode="numeric"></div>
+        <div class="campo"><label for="c-rent">Rentabilidad proyectada</label><input id="c-rent" placeholder="112,5 %"></div>
+        <div class="campo"><label for="c-sep">Separación</label><input id="c-sep" placeholder="$5.000.000"></div>
+        <div class="campo"><label for="c-palabra">Nombre de los grupos</label><input id="c-palabra" placeholder="Manzana"></div>
+        <div class="campo ancho"><label for="c-grupos">Lotes de cada grupo</label><textarea id="c-grupos" spellcheck="false"></textarea><small>Una línea por grupo: <code>A: 1-5, 24-28</code></small></div>
+      </form>
+      <h3><code>proyecto.json</code></h3>
+      <pre id="json" tabindex="0" aria-label="proyecto.json generado"></pre>
+      <div class="fila-botones">
+        <button type="button" class="boton" id="b-a-resultado">Siguiente: resultado</button>
+        <button type="button" class="boton sec chico" id="b-copiar">Copiar</button>
+        <button type="button" class="boton sec chico" id="b-descargar">Descargar proyecto.json</button>
+        <span class="nota" id="aviso-copia" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="panel" id="paso-4" hidden>
+      <h3>4 · Resultado</h3>
+      <div id="res-cayman" hidden>
+        <p>Con esta exportación y su <code>proyecto.json</code>, el motor construyó el aplicativo que está publicado aquí mismo. Ábralo y toque un lote.</p>
+        <div class="fila-botones">
+          <a class="boton" href="cayman-creek/index.htm" id="b-res-abrir">Abrir el aplicativo de Cayman Creek</a>
+          <a class="boton sec chico" href="#resultado">Ver cada parte</a>
+        </div>
+        <ul class="cifras">
+          <li><b>45</b><span>lotes con su color</span></li>
+          <li><b>9</b><span>números corregidos</span></li>
+          <li><b>7,4 MB</b><span>menos de descarga</span></li>
+          <li><b>52/52</b><span>pruebas en navegador</span></li>
+        </ul>
+      </div>
+      <div id="res-otro" hidden>
+        <p>Su recorrido es compatible. Para construir el aplicativo, en una copia del repositorio:</p>
+        <ol class="ordenes">
+          <li><div><strong>Guarde la configuración</strong><span>en <code id="ruta-proy"></code> (el botón «Descargar proyecto.json» la deja lista). Si tiene logos, póngalos en <code>marca/</code>; si no, el motor genera uno con las iniciales.</span></div></li>
+          <li><div><strong>Construya</strong><pre id="orden-construir"></pre></div></li>
+          <li><div><strong>Pruebe y publique</strong><span>La carpeta <code>salida/tour</code> es un sitio estático: se sube tal cual a GitHub Pages o a cualquier hosting.</span></div></li>
+        </ol>
+      </div>
+      <div class="fila-botones"><button type="button" class="boton sec chico" id="b-reiniciar-4">Probar con otra exportación</button></div>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section class="secc" id="proceso" aria-labelledby="t-proceso">
+    <span class="etiqueta">Cómo funciona</span>
+    <h2 id="t-proceso">Un motor genérico y proyectos que lo usan</h2>
+    <div class="dos">
+      <div class="caja">
+        <span class="etiqueta">Plataforma</span>
+        <h3>Motor 3DVista</h3>
+        <span class="ruta">motor-3dvista/</span>
+        <ul>
+          <li>No trae datos de ningún proyecto</li>
+          <li>Sirve para cualquier recorrido con lotes «rojo N»</li>
+          <li>El analizador de esta página es parte del motor</li>
+        </ul>
+      </div>
+      <div class="flecha" aria-hidden="true"><svg viewBox="0 0 64 24"><path d="M2 12h56M48 4l10 8-10 8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>construye</div>
+      <div class="caja">
+        <span class="etiqueta">Proyecto</span>
+        <h3>Cayman Creek (ejemplo)</h3>
+        <span class="ruta">proyectos/cayman-creek/</span>
+        <ul>
+          <li>Sus datos en <code>proyecto.json</code> y su marca</li>
+          <li>El sitio que sale no necesita el motor para funcionar</li>
+          <li>Otro proyecto: otra carpeta con su propio <code>proyecto.json</code></li>
+        </ul>
+      </div>
+    </div>
+    <h3>Lo que el motor cambia (sin fotos ni panoramas nuevos)</h3>
+    <ul class="motor-lista">
+      <li><b>Colores</b><span>gemelos verde y naranja de cada polígono rojo, encendidos según la hoja</span></li>
+      <li><b>Ficha del lote</b><span>área, rentabilidad, separación y WhatsApp con el lote en el mensaje</span></li>
+      <li><b>Etiquetas</b><span>manzanas y lugares nítidos que siguen la cámara</span></li>
+      <li><b>Números</b><span>corrige los que la exportación trae corridos y los regenera nítidos</span></li>
+      <li><b>Cámaras</b><span>las vistas abren mirando a los lotes, sin girar 360°</span></li>
+      <li><b>Peso</b><span>no descarga la piel vieja que ya no se ve</span></li>
+      <li><b>Carga</b><span>pantalla propia con avance real y la leyenda de colores</span></li>
+      <li><b>Producción</b><span>quita el código que esconde la marca de agua de 3DVista</span></li>
+    </ul>
+  </section>
+
+  <!-- Resultado -->
+  <section class="secc" id="resultado" aria-labelledby="t-resultado">
+    <span class="etiqueta">Resultado con Cayman Creek</span>
+    <h2 id="t-resultado">Cada parte del aplicativo</h2>
+    <div class="filtros" role="group" aria-label="Filtrar por pantalla">
+      <button type="button" id="f-todo" data-f="todo" aria-pressed="true">Todo</button>
+      <button type="button" id="f-pc" data-f="pc" aria-pressed="false">Computador</button>
+      <button type="button" id="f-movil" data-f="movil" aria-pressed="false">Teléfono y tablet</button>
+    </div>
+    <div class="rejilla" id="rejilla"></div>
+  </section>
+
+  <section class="secc" aria-labelledby="t-pend">
+    <span class="etiqueta">Depende del cliente</span>
+    <h2 id="t-pend">Lo que el motor no puede resolver solo</h2>
+    <ul class="pendientes">
+      <li><strong>Marca de agua «3dvista Academic».</strong> Viene de la licencia con que se exportó; se quita exportando con una licencia comercial de 3DVista.</li>
+      <li><strong>Imágenes que no vienen en la exportación.</strong> El motor usa la miniatura y lo avisa (en Cayman Creek, la página 9 del álbum móvil).</li>
+      <li><strong>Las manzanas.</strong> El analizador las propone, pero hay que revisarlas: en Cayman Creek acertó 33 de 45.</li>
+    </ul>
+    <p class="pie">Capturas tomadas por las pruebas automáticas con una hoja de ejemplo (no son estados reales de venta). ULTRAMEDIA COMPANY · EDITOR.</p>
+  </section>
+</main>
+
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-labelledby="visor-t">
+  <div class="barra"><p id="visor-t"></p><button type="button" id="visor-cerrar">Cerrar</button></div>
+  <img id="visor-img" alt="">
+</div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="analizar.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var estado = { origen: null, nombre: '', archivos: null, r: null, revisado: null };
+
+  // ---------- comparador
+  var comp = $('#comparador'), corte = $('#corte');
+  function mover() { comp.style.setProperty('--corte', corte.value + '%'); }
+  corte.addEventListener('input', mover); mover();
+
+  // ---------- pasos
+  function irA(n) {
+    for (var i = 1; i <= 4; i++) {
+      $('#paso-' + i).hidden = i !== n;
+      $('#pb-' + i).dataset.estado = i < n ? 'hecho' : i === n ? 'actual' : '';
+    }
+    var p = $('#paso-' + n); p.classList.remove('entra'); void p.offsetWidth; p.classList.add('entra');
+    $('#probador').scrollIntoView({ block: 'start' });
+    var h = p.querySelector('h3'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+  }
+  function reiniciar() { estado = { origen: null, nombre: '', archivos: null, r: null, revisado: null }; $('#estado-carga').textContent = ''; $('#f-zip').value = ''; $('#f-carpeta').value = ''; irA(1); }
+  $('#b-reiniciar-2').addEventListener('click', reiniciar);
+  $('#b-reiniciar-4').addEventListener('click', reiniciar);
+  function cargando(t, err) { var e = $('#estado-carga'); e.textContent = t; e.className = err ? 'estado-carga error' : 'estado-carga'; }
+
+  // ---------- 1. elegir exportación
+  function usarEjemplo() {
+    cargando('Leyendo la exportación de Cayman Creek…');
+    var base = 'ejemplo/cayman-creek/';
+    var leer = function (f) { return fetch(base + f).then(function (r) { if (!r.ok) throw new Error(f + ': ' + r.status); return r.text(); }); };
+    Promise.all([leer('script_general.js'), leer('locale/es.txt'), leer('script.js'), leer('index.htm'),
+      fetch(base + 'proyecto.json').then(function (r) { return r.ok ? r.json() : null; })])
+      .then(function (v) {
+        estado.origen = 'cayman'; estado.nombre = 'Cayman Creek'; estado.revisado = v[4];
+        analizar({ scriptGeneral: v[0], locale: v[1], script: v[2], index: v[3], nombre: 'Cayman Creek' });
+      })
+      .catch(function (e) { cargando('No pude leer el ejemplo (' + e.message + '). Abra esta página desde el sitio publicado, no como archivo.', true); });
+  }
+  $('#b-ejemplo').addEventListener('click', usarEjemplo);
+  $('#b-ver-cayman').addEventListener('click', usarEjemplo);
+  $('#b-otro').addEventListener('click', function () { reiniciar(); $('#zona').scrollIntoView({ block: 'center' }); $('#f-zip').click(); });
+
+  var BUSCAR = ['script_general.js', 'locale/es.txt', 'script.js', 'index.htm'];
+  function nombreBase(n) { return String(n || '').replace(/\.zip$/i, '').replace(/[-_]+/g, ' ').trim(); }
+  function leerZip(file) {
+    if (!window.JSZip) { cargando('No se pudo cargar el lector de .zip.', true); return; }
+    cargando('Abriendo ' + file.name + '…');
+    JSZip.loadAsync(file).then(function (zip) {
+      // la exportación puede venir dentro de una carpeta: se busca donde esté script_general.js
+      var raiz = null;
+      zip.forEach(function (ruta) { if (raiz === null && /(^|\/)script_general\.js$/.test(ruta)) raiz = ruta.slice(0, ruta.length - 'script_general.js'.length); });
+      if (raiz === null) { cargando('Ese .zip no tiene script_general.js: no parece una exportación de 3DVista para web.', true); return; }
+      return Promise.all(BUSCAR.map(function (f) { var e = zip.file(raiz + f); return e ? e.async('string') : Promise.resolve(''); }))
+        .then(function (v) {
+          estado.origen = 'otro'; estado.nombre = nombreBase(raiz.replace(/\/$/, '').split('/').pop() || file.name); estado.revisado = null;
+          analizar({ scriptGeneral: v[0], locale: v[1], script: v[2], index: v[3], nombre: titulo(estado.nombre) });
+        });
+    }).catch(function (e) { cargando('No pude abrir el .zip (' + e.message + ').', true); });
+  }
+  function leerCarpeta(files) {
+    var porRuta = {};
+    Array.prototype.forEach.call(files, function (f) { porRuta[f.webkitRelativePath || f.name] = f; });
+    var raiz = null;
+    Object.keys(porRuta).forEach(function (r) { if (raiz === null && /(^|\/)script_general\.js$/.test(r)) raiz = r.slice(0, r.length - 'script_general.js'.length); });
+    if (raiz === null) { cargando('Esa carpeta no tiene script_general.js: elija la carpeta de la exportación de 3DVista.', true); return; }
+    cargando('Leyendo la carpeta…');
+    Promise.all(BUSCAR.map(function (f) { var a = porRuta[raiz + f]; return a ? a.text() : Promise.resolve(''); })).then(function (v) {
+      estado.origen = 'otro'; estado.nombre = nombreBase(raiz.replace(/\/$/, '').split('/').pop()); estado.revisado = null;
+      analizar({ scriptGeneral: v[0], locale: v[1], script: v[2], index: v[3], nombre: titulo(estado.nombre) });
+    });
+  }
+  function titulo(t) { t = String(t).trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Mi proyecto'; }
+  $('#f-zip').addEventListener('change', function () { if (this.files[0]) leerZip(this.files[0]); });
+  $('#f-carpeta').addEventListener('change', function () { if (this.files.length) leerCarpeta(this.files); });
+  var zona = $('#zona');
+  ['dragenter', 'dragover'].forEach(function (ev) { zona.addEventListener(ev, function (e) { e.preventDefault(); zona.classList.add('encima'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { zona.addEventListener(ev, function (e) { e.preventDefault(); zona.classList.remove('encima'); }); });
+  zona.addEventListener('drop', function (e) { var f = e.dataTransfer.files[0]; if (f) leerZip(f); });
+
+  // ---------- 2. revisión
+  function analizar(archivos) {
+    var r;
+    try { r = Analizador3DVista.analizar(archivos); } catch (e) { cargando('El analizador falló con esta exportación: ' + e.message, true); return; }
+    estado.r = r;
+    $('#r-nombre').textContent = archivos.nombre;
+    var v = $('#veredicto');
+    v.className = 'veredicto ' + (r.compatible ? 'si' : 'no');
+    v.textContent = r.compatible ? '✓ Compatible: el motor puede construir este recorrido.' : '✗ Todavía no es compatible: revise lo que está en rojo.';
+    var res = r.resumen || {};
+    $('#cifras').innerHTML = '';
+    [[res.lotes, 'lotes'], [res.vistas, 'vistas'], [res.vistasConLotes, 'vistas con lotes'], [res.poligonosRojos, 'polígonos «rojo N»'], [res.grupos, 'grupos'], [res.lugares, 'lugares']].forEach(function (c) {
+      if (c[0] === undefined) return;
+      var li = document.createElement('li'), b = document.createElement('b'), s = document.createElement('span');
+      b.textContent = c[0]; s.textContent = c[1]; li.appendChild(b); li.appendChild(s); $('#cifras').appendChild(li);
+    });
+    $('#requisitos').innerHTML = '';
+    r.requisitos.forEach(function (q) {
+      var li = document.createElement('li'); li.className = q.ok ? 'si' : 'no';
+      var m = document.createElement('span'); m.className = 'marca-r'; m.textContent = q.ok ? '✓' : '✗'; m.setAttribute('aria-label', q.ok ? 'cumple' : 'no cumple');
+      var d = document.createElement('div'); d.textContent = q.texto;
+      if (q.detalle) { var s = document.createElement('small'); s.textContent = q.detalle; d.appendChild(s); }
+      li.appendChild(m); li.appendChild(d); $('#requisitos').appendChild(li);
+    });
+    $('#avisos').innerHTML = '';
+    (r.avisos || []).forEach(function (a) { var li = document.createElement('li'); li.textContent = a; $('#avisos').appendChild(li); });
+    $('#bloque-avisos').hidden = !(r.avisos || []).length;
+    $('#b-a-config').disabled = !r.compatible;
+    cargando('');
+    llenarFormulario();
+    irA(2);
+  }
+  $('#b-a-config').addEventListener('click', function () { irA(3); });
+
+  // ---------- 3. configuración
+  function rangosATexto(grupos) {
+    return Object.keys(grupos).map(function (g) { return g + ': ' + grupos[g].map(function (r) { return r[0] === r[1] ? r[0] : r[0] + '-' + r[1]; }).join(', '); }).join('\n');
+  }
+  function textoARangos(t) {
+    var out = {};
+    String(t).split(/\n+/).forEach(function (l) {
+      var m = /^\s*([^:]+?)\s*:\s*(.+)$/.exec(l); if (!m) return;
+      var rs = m[2].split(',').map(function (x) { var p = x.trim().split(/\s*-\s*/).map(Number); return p.length === 2 ? p : [p[0], p[0]]; })
+        .filter(function (p) { return p.every(function (n) { return Number.isFinite(n) && n > 0; }); });
+      if (rs.length) out[m[1]] = rs;
+    });
+    return out;
+  }
+  function llenarFormulario() {
+    var p = estado.r.proyecto, ux = p.ux || {}, rev = estado.revisado;
+    var fuente = rev || p, uxf = (rev && rev.ux) || ux;
+    $('#c-nombre').value = fuente.nombre || p.nombre;
+    $('#c-sub').value = fuente.subtitulo || '';
+    $('#c-wa').value = uxf.whatsapp || '';
+    $('#c-tel').value = uxf.telefonoVisible || '';
+    $('#c-hoja').value = uxf.hojaCsv || ux.hojaCsv || '';
+    $('#c-anio').value = uxf.anioProyeccion || ux.anioProyeccion || '';
+    $('#c-rent').value = uxf.rentabilidadProyectada || '';
+    $('#c-sep').value = uxf.separacion || '';
+    $('#c-palabra').value = (fuente.lotes && fuente.lotes.textoGrupo) || p.lotes.textoGrupo;
+    $('#c-grupos').value = rangosATexto((fuente.lotes && fuente.lotes.grupos) || p.lotes.grupos);
+    var cmp = $('#comparacion');
+    if (rev) {
+      var a = mapa(p.lotes.grupos), b = mapa(rev.lotes.grupos), total = Object.keys(b).length;
+      var iguales = Object.keys(b).filter(function (n) { return a[n] === b[n]; }).length;
+      cmp.hidden = false;
+      cmp.textContent = 'En Cayman Creek, el analizador propuso las manzanas y acertó ' + iguales + ' de ' + total + ' lotes; después se revisaron a mano con el plano maestro. Abajo está la configuración revisada, la misma con la que se construyó el aplicativo publicado.';
+    } else cmp.hidden = true;
+    actualizarJson();
+  }
+  function mapa(gr) { var m = {}; Object.keys(gr).forEach(function (k) { gr[k].forEach(function (r) { for (var n = r[0]; n <= r[1]; n++) m[n] = k; }); }); return m; }
+  function proyectoFinal() {
+    var base = JSON.parse(JSON.stringify(estado.revisado || estado.r.proyecto));
+    base.nombre = $('#c-nombre').value.trim() || 'Mi proyecto';
+    base.subtitulo = $('#c-sub').value.trim();
+    if (!base.titulo || estado.origen !== 'cayman') base.titulo = base.nombre + (base.subtitulo ? ' · ' + base.subtitulo : '');
+    base.lotes = base.lotes || {};
+    base.lotes.textoGrupo = $('#c-palabra').value.trim() || 'Manzana';
+    var gr = textoARangos($('#c-grupos').value);
+    if (Object.keys(gr).length) base.lotes.grupos = gr;
+    base.ux = base.ux || {};
+    base.ux.whatsapp = $('#c-wa').value.replace(/\D/g, '');
+    base.ux.telefonoVisible = $('#c-tel').value.trim();
+    base.ux.hojaCsv = $('#c-hoja').value.trim();
+    var anio = parseInt($('#c-anio').value, 10); if (anio) base.ux.anioProyeccion = anio;
+    base.ux.rentabilidadProyectada = $('#c-rent').value.trim();
+    base.ux.separacion = $('#c-sep').value.trim();
+    return base;
+  }
+  function lotesSinGrupo(p) {
+    var m = mapa(p.lotes.grupos || {});
+    return (estado.r.lotes || []).map(function (l) { return l.lote; }).filter(function (n) { return !m[n]; });
+  }
+  function actualizarJson() {
+    var p = proyectoFinal();
+    $('#json').textContent = JSON.stringify(p, null, 2);
+    var faltan = lotesSinGrupo(p);
+    $('#aviso-copia').textContent = faltan.length ? 'Lotes sin grupo: ' + faltan.join(', ') + ' (el motor los exige).' : '';
+    $('#aviso-copia').className = faltan.length ? 'nota error' : 'nota';
+  }
+  $('#form').addEventListener('input', actualizarJson);
+  $('#form').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('#b-copiar').addEventListener('click', function () {
+    var t = $('#json').textContent;
+    var ok = function () { $('#aviso-copia').textContent = 'Copiado.'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, seleccionar); else seleccionar();
+    function seleccionar() { var r = document.createRange(); r.selectNodeContents($('#json')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#aviso-copia').textContent = 'Seleccionado: copie con Ctrl+C.'; }
+  });
+  $('#b-descargar').addEventListener('click', function () {
+    var b = new Blob([$('#json').textContent + '\n'], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'proyecto.json';
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  });
+  $('#b-a-resultado').addEventListener('click', function () {
+    var p = proyectoFinal(), faltan = lotesSinGrupo(p);
+    if (faltan.length) { $('#c-grupos').focus(); return; }
+    var esCayman = estado.origen === 'cayman';
+    $('#res-cayman').hidden = !esCayman; $('#res-otro').hidden = esCayman;
+    var slug = (p.nombre || 'mi-proyecto').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mi-proyecto';
+    $('#ruta-proy').textContent = 'proyectos/' + slug + '/proyecto.json';
+    $('#orden-construir').textContent = 'python3 -I motor-3dvista/motor/construir.py proyectos/' + slug + ' "<carpeta de la exportación>" proyectos/' + slug + '/salida';
+    irA(4);
+  });
+
+  // ---------- galería
+  var piezas = [
+    ['01-pantalla-de-carga', 'Pantalla de carga', 'Logo, avance real y la leyenda de colores mientras carga.', 'pc'],
+    ['02-vista-aerea-1', 'Vista aérea 1', 'Lotes pintados según la hoja; manzanas y lugares como etiquetas.', 'pc'],
+    ['10-vista-aerea-2', 'Vista aérea 2', 'Abre mirando a los lotes, con el plano completo dibujado.', 'pc'],
+    ['03-ficha-lote-disponible', 'Ficha · disponible', 'Área real, rentabilidad, separación y WhatsApp con el lote en el mensaje.', 'pc'],
+    ['04-ficha-lote-reservado', 'Ficha · reservado', 'Cambia el llamado: «Lote reservado · pregunte por él».', 'pc'],
+    ['05-ficha-lote-vendido', 'Ficha · vendido', 'Ofrece preguntar por lotes disponibles.', 'pc'],
+    ['06-ubicacion', 'Ubicación', 'Las etiquetas se apartan mientras la ventana está abierta.', 'pc'],
+    ['07-galeria', 'Galería', 'Álbum de fotos del proyecto.', 'pc'],
+    ['08-plano-maestro', 'Plano maestro', 'Plano del loteo dentro del recorrido.', 'pc'],
+    ['09-informacion', 'Información', 'Masterplan con las manzanas.', 'pc'],
+    ['11-cartagena', 'Vista Cartagena', 'Vista de contexto con «Volver a la vista aérea».', 'pc'],
+    ['12-telefono', 'Teléfono', 'Versión móvil: los lotes llenan la pantalla.', 'movil', 1],
+    ['13-telefono-ficha', 'Teléfono · ficha', 'La ficha cabe completa en la pantalla.', 'movil', 1],
+    ['14-telefono-ventanas', 'Teléfono · ventanas', 'Ubicación, galería, plano e información con su «×» a la vista.', 'movil'],
+    ['15-tablet-horizontal', 'Tablet horizontal', 'Vista aérea y ficha en un iPad acostado.', 'movil']
+  ];
+  var rejilla = $('#rejilla');
+  piezas.forEach(function (p) {
+    var f = document.createElement('figure'); f.className = 'pieza' + (p[4] ? ' alta' : ''); f.dataset.f = p[3];
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Ampliar: ' + p[1]);
+    var im = document.createElement('img'); im.src = 'img/' + p[0] + '.webp'; im.alt = p[1] + '. ' + p[2]; im.loading = 'lazy';
+    b.appendChild(im); b.addEventListener('click', function () { abrir(p); });
+    var c = document.createElement('figcaption'), s = document.createElement('strong'), t = document.createElement('span');
+    s.textContent = p[1]; t.textContent = p[2]; c.appendChild(s); c.appendChild(t);
+    f.appendChild(b); f.appendChild(c); rejilla.appendChild(f);
+  });
+  document.querySelectorAll('.filtros button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.filtros button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      rejilla.querySelectorAll('.pieza').forEach(function (f) { f.hidden = b.dataset.f !== 'todo' && f.dataset.f !== b.dataset.f; });
+    });
+  });
+  var visor = $('#visor'), vImg = $('#visor-img'), vT = $('#visor-t'), cerrarB = $('#visor-cerrar'), antes = null;
+  function abrir(p) { antes = document.activeElement; vImg.src = 'img/' + p[0] + '.webp'; vImg.alt = p[1] + '. ' + p[2]; vT.textContent = p[1]; visor.hidden = false; cerrarB.focus(); }
+  function cerrar() { visor.hidden = true; vImg.removeAttribute('src'); if (antes && antes.focus) antes.focus(); }
+  cerrarB.addEventListener('click', cerrar);
+  visor.addEventListener('click', function (e) { if (e.target === visor || e.target === vImg) cerrar(); });
+  document.addEventListener('keydown', function (e) { if (visor.hidden) return; if (e.key === 'Escape') cerrar(); else if (e.key === 'Tab') { e.preventDefault(); cerrarB.focus(); } });
+
+  // enlace directo: #probar-cayman abre el proceso con el ejemplo
+  if (location.hash === '#probar-cayman') usarEjemplo();
+})();
+</script>
+</body>
+</html>

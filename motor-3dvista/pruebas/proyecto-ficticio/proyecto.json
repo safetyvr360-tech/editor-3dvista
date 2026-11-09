@@ -1,0 +1,13 @@
+{
+  "nombre": "Parque Ficticio",
+  "subtitulo": "Proyecto de prueba del motor",
+  "motor": "1.0",
+  "lotes": {
+    "textoGrupo": "Manzana",
+    "grupos": { "N": [[1, 23]], "S": [[24, 45]] }
+  },
+  "lugares": { "LOBBY": "Recepción" },
+  "destinos": { "2": "Otra vista" },
+  "ux": { "hojaCsv": "https://ejemplo.invalid/hoja.csv", "whatsapp": "570000000000", "telefonoVisible": "000 000 0000" },
+  "marca": { "logoRedondo": "marca/redondo.png", "logoBlanco": "marca/blanco.png" }
+}

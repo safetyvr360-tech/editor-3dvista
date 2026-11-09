@@ -111,7 +111,7 @@ async function zipDe(nombre, archivos) {
   await p.waitForSelector('#ed-2:not([hidden])', { timeout: 15000 });
   ok((await p.$$eval('#ed-lotes button', (b) => b.length)) === 45, 'EDITOR · EJEMPLO: muestra los 45 lotes de Cayman Creek para marcar');
   await p.click('#ed-lotes button[data-lote="3"]'); await p.click('#ed-lotes button[data-lote="9"]');
-  ok(/2 vendidos/.test(await p.textContent('#ed-resumen')) && await p.isDisabled('#ed-b-exportar') && await p.isVisible('#ed-nota-ejemplo'), 'EDITOR · EJEMPLO: cuenta los cambios y explica que para descargar hace falta el .zip completo');
+  ok(/2 vendidos nuevos y 0 disponibles nuevos/.test(await p.textContent('#ed-resumen')) && await p.isDisabled('#ed-b-exportar') && await p.isVisible('#ed-nota-ejemplo'), 'EDITOR · EJEMPLO: cuenta los cambios y explica que para descargar hace falta el .zip completo');
   await p.click('.idioma button[data-idioma="en"]');
   ok(/Mark lots as sold/.test(await p.textContent('#t-editar')) && /2 newly sold/.test(await p.textContent('#ed-resumen')) && (await p.getAttribute('#editar', 'lang')) === 'en', 'EDITOR · IDIOMA: en inglés cambia títulos, resumen y el idioma de la sección');
   await p.click('.idioma button[data-idioma="es-CO"]');

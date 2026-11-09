@@ -715,7 +715,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
       'ed.soloEjemplo': 'En el ejemplo no hay .zip completo: cargue el suyo para descargar.',
       'ed.lotesDe': 'Lotes de {n} · toque un lote para marcarlo vendido o disponible',
       'ed.sinCambios': 'Todavía no ha cambiado nada.',
-      'ed.cambios': '{v} vendidos y {d} disponibles nuevos{wa}.', 'ed.cambioWa': '; WhatsApp nuevo',
+      'ed.cambios': '{v} {vt} y {d} {dt}{wa}.', 'ed.v1': 'vendido nuevo', 'ed.vN': 'vendidos nuevos', 'ed.d1': 'disponible nuevo', 'ed.dN': 'disponibles nuevos', 'ed.cambioWa': '; WhatsApp nuevo',
       'ed.abriendo': 'Abriendo el .zip en segundo plano…', 'ed.rearmando': 'Rearmando el .zip en segundo plano…',
       'ed.garantia': '<b>✓ Mismo recorrido.</b> {n} entradas entraron y {n} salieron, con los mismos nombres y en el mismo orden. Cambiaron por dentro: {archivos}.',
       'ed.loteAria': 'Lote {n}: {estado}',
@@ -740,7 +740,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
       'ed.soloEjemplo': 'The example has no full .zip: load yours to download.',
       'ed.lotesDe': 'Lots of {n} · tap a lot to mark it sold or available',
       'ed.sinCambios': 'Nothing has changed yet.',
-      'ed.cambios': '{v} newly sold and {d} newly available{wa}.', 'ed.cambioWa': '; new WhatsApp',
+      'ed.cambios': '{v} {vt} and {d} {dt}{wa}.', 'ed.v1': 'newly sold', 'ed.vN': 'newly sold', 'ed.d1': 'newly available', 'ed.dN': 'newly available', 'ed.cambioWa': '; new WhatsApp',
       'ed.abriendo': 'Opening the .zip in the background…', 'ed.rearmando': 'Rebuilding the .zip in the background…',
       'ed.garantia': '<b>✓ Same tour.</b> {n} entries went in and {n} came out, with the same names in the same order. Changed inside: {archivos}.',
       'ed.loteAria': 'Lot {n}: {estado}',
@@ -815,7 +815,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   }
   function resumenEd() {
     var c = cambiosEd();
-    $('#ed-resumen').textContent = c.v || c.d || c.whatsapp ? t('ed.cambios', { v: c.v, d: c.d, wa: c.whatsapp ? t('ed.cambioWa') : '' }) : t('ed.sinCambios');
+    $('#ed-resumen').textContent = c.v || c.d || c.whatsapp ? t('ed.cambios', { v: c.v, d: c.d, vt: t(c.v === 1 ? 'ed.v1' : 'ed.vN'), dt: t(c.d === 1 ? 'ed.d1' : 'ed.dN'), wa: c.whatsapp ? t('ed.cambioWa') : '' }) : t('ed.sinCambios');
   }
   $('#ed-wa').addEventListener('input', resumenEd);
   $('#ed-b-ejemplo').addEventListener('click', function () {

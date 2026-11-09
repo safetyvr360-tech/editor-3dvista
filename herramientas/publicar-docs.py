@@ -29,6 +29,7 @@ def main(exportacion):
     shutil.copytree(salida / 'tour', destino)
     # 2) analizador
     shutil.copy(RAIZ / 'motor-3dvista' / 'analizador' / 'analizar.js', DOCS / 'analizar.js')
+    shutil.copy(RAIZ / 'motor-3dvista' / 'editor' / 'editar.js', DOCS / 'editar.js')
     # 3) ejemplo para el botón «Ver el proceso con Cayman Creek»
     ej = DOCS / 'ejemplo' / 'cayman-creek'
     if ej.exists(): shutil.rmtree(ej)

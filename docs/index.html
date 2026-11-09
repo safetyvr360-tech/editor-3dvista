@@ -157,6 +157,19 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
 .pendientes li { background: var(--hoja); border: 1px solid var(--linea); border-left: 4px solid var(--naranja); border-radius: 8px; padding: 12px 14px; }
 .pie { font-size: .85rem; color: var(--tinta-2); border-top: 1px solid var(--linea); padding-top: 18px; }
 
+/* editor dentro de los archivos */
+.editor-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.idioma { display: inline-flex; border: 1px solid var(--linea); border-radius: 999px; overflow: hidden; }
+.idioma button { font: 700 .82rem/1 var(--f-dato); padding: 8px 12px; border: 0; background: var(--hoja); color: var(--tinta-2); cursor: pointer; }
+.idioma button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.lotes-rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 8px; }
+.lote-b { font: 700 1rem/1 var(--f-dato); font-variant-numeric: tabular-nums; padding: 12px 0; border-radius: 10px; border: 2px solid var(--verde); background: color-mix(in srgb, var(--verde) 14%, transparent); color: var(--tinta); cursor: pointer; }
+.lote-b[aria-pressed="true"] { border-color: var(--rojo); background: var(--rojo); color: #fff; }
+.lote-b.cambiado { box-shadow: 0 0 0 3px var(--naranja); }
+.leyenda-ed { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .9rem; color: var(--tinta-2); }
+.leyenda-ed i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.garantia { display: grid; gap: 6px; padding: 14px 16px; border-radius: 12px; background: color-mix(in srgb, var(--bien) 12%, transparent); }
+.garantia b { color: var(--bien); }
 @media (max-width: 760px) {
   .pasos-barra { grid-template-columns: repeat(2, 1fr); }
   .opciones, .form, .dos { grid-template-columns: 1fr; }
@@ -178,6 +191,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
     <a class="marca" href="#inicio"><i aria-hidden="true"></i>EDITOR · Motor 3DVista</a>
     <nav class="nav" aria-label="Secciones">
       <a href="#probador">Probar</a>
+      <a href="#editar">Editar</a>
       <a href="#proceso">Cómo funciona</a>
       <a href="#resultado">Resultado</a>
       <a href="cayman-creek/index.htm">Cayman Creek</a>
@@ -188,11 +202,12 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   <section class="inicio" id="inicio" aria-labelledby="t-inicio">
     <span class="etiqueta">Plataforma EDITOR</span>
     <h1 id="t-inicio">Su recorrido de 3DVista, convertido en un aplicativo que vende lotes</h1>
-    <p class="entrada">Cada lote se pinta según una hoja de cálculo y, al tocarlo, abre su ficha con WhatsApp. Funciona con cualquier recorrido que marque sus lotes como «rojo N». Vea el proceso completo con Cayman Creek o pruebe el suyo.</p>
+    <p class="entrada">Cada lote se pinta según una hoja de cálculo y, al tocarlo, abre su ficha con WhatsApp. Funciona con cualquier recorrido que marque sus lotes como «rojo N». Vea el proceso completo con Cayman Creek, pruebe el suyo o edite los lotes de un recorrido ya publicado sin cambiar su .zip.</p>
     <div class="acciones">
       <button type="button" class="boton" id="b-ver-cayman">▶ Ver el proceso con Cayman Creek</button>
       <button type="button" class="boton sec" id="b-otro">Usar con otro recorrido</button>
       <a class="boton sec" href="cayman-creek/index.htm" id="b-abrir-cayman">Abrir Cayman Creek terminado</a>
+      <a class="boton sec" href="#editar" id="b-ir-editar">Editar lotes sin tocar el .zip</a>
     </div>
     <ul class="estados" aria-label="Los tres estados de un lote">
       <li><i style="background: var(--verde)"></i>Disponible</li>
@@ -319,6 +334,54 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
     </div>
   </section>
 
+  <!-- Editar dentro de los archivos -->
+  <section class="probador" id="editar" aria-labelledby="t-editar">
+    <div class="editor-cab">
+      <div style="display:grid;gap:10px;min-width:0">
+        <span class="etiqueta" data-t="ed.etiqueta"></span>
+        <h2 id="t-editar" data-t="ed.titulo"></h2>
+      </div>
+      <div class="idioma" role="group" aria-label="Idioma · Language">
+        <button type="button" data-idioma="es-CO" aria-pressed="true">ES</button>
+        <button type="button" data-idioma="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+    <p class="entrada" data-t="ed.entrada"></p>
+    <div class="panel" id="ed-1">
+      <div class="opciones">
+        <div class="opcion">
+          <span class="etiqueta" data-t="ed.ejemplo"></span>
+          <h3>Cayman Creek</h3>
+          <p class="nota" data-t="ed.ejemploNota"></p>
+          <button type="button" class="boton" id="ed-b-ejemplo" data-t="ed.usarEjemplo"></button>
+        </div>
+        <div class="opcion">
+          <span class="etiqueta" data-t="ed.suyo"></span>
+          <h3 data-t="ed.suyoTitulo"></h3>
+          <p class="nota" data-t="ed.suyoNota"></p>
+          <label class="boton sec" for="ed-zip" data-t="ed.elegirZip"></label>
+          <input type="file" id="ed-zip" accept=".zip,application/zip" hidden>
+        </div>
+      </div>
+      <p class="estado-carga" id="ed-estado" role="status" aria-live="polite"></p>
+    </div>
+    <div class="panel" id="ed-2" hidden>
+      <h3 id="ed-titulo-lotes"></h3>
+      <div class="leyenda-ed"><span><i style="background:var(--verde)"></i><span data-t="ed.disponible"></span></span><span><i style="background:var(--rojo)"></i><span data-t="ed.vendido"></span></span><span><i style="background:var(--naranja)"></i><span data-t="ed.cambiado"></span></span></div>
+      <div class="lotes-rejilla" id="ed-lotes" role="group"></div>
+      <div class="form">
+        <div class="campo"><label for="ed-wa" data-t="ed.whatsapp"></label><input id="ed-wa" inputmode="numeric"></div>
+        <div class="campo"><span style="font-weight:600;font-size:.92rem" data-t="ed.resumen"></span><p id="ed-resumen" class="nota"></p></div>
+      </div>
+      <div class="fila-botones">
+        <button type="button" class="boton" id="ed-b-exportar" data-t="ed.exportar"></button>
+        <button type="button" class="boton sec chico" id="ed-b-otro" data-t="ed.otro"></button>
+        <span class="nota" id="ed-nota-ejemplo" hidden data-t="ed.soloEjemplo"></span>
+      </div>
+      <div class="garantia" id="ed-garantia" hidden role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
   <!-- Cómo funciona -->
   <section class="secc" id="proceso" aria-labelledby="t-proceso">
     <span class="etiqueta">Cómo funciona</span>
@@ -390,6 +453,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
 
 <script src="vendor/jszip.min.js"></script>
 <script src="analizar.js"></script>
+<script src="editar.js"></script>
 <script>
 (function () {
   'use strict';
@@ -636,6 +700,144 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   document.addEventListener('keydown', function (e) { if (visor.hidden) return; if (e.key === 'Escape') cerrar(); else if (e.key === 'Tab') { e.preventDefault(); cerrarB.focus(); } });
 
   // enlace directo: #probar-cayman abre el proceso con el ejemplo
+  // ================= Editor dentro de los archivos (bilingüe: es-CO de «usted» / en) =================
+  var TEXTOS = {
+    'es-CO': {
+      'ed.etiqueta': 'Editar sin tocar el .zip',
+      'ed.titulo': 'Marque lotes vendidos y entregue el mismo recorrido',
+      'ed.entrada': 'Para el cliente que ya tiene su recorrido publicado: los cambios se escriben dentro de los archivos del propio recorrido. No se agrega ninguna capa ni ningún archivo: el .zip sale con las mismas entradas, en el mismo orden.',
+      'ed.ejemplo': 'Ejemplo', 'ed.ejemploNota': 'Vea cómo se editan los 45 lotes. Para descargar el .zip editado, cargue la exportación completa.',
+      'ed.usarEjemplo': 'Editar Cayman Creek de ejemplo', 'ed.suyo': 'Su recorrido', 'ed.suyoTitulo': 'Abrir su .zip',
+      'ed.suyoNota': 'Se abre y se rearma en su navegador, en segundo plano: no se sube a ningún lado.',
+      'ed.elegirZip': 'Elegir .zip', 'ed.disponible': 'Disponible', 'ed.vendido': 'Vendido', 'ed.cambiado': 'Cambiado por usted',
+      'ed.whatsapp': 'WhatsApp del recorrido (con indicativo)', 'ed.resumen': 'Cambios',
+      'ed.exportar': 'Descargar .zip editado', 'ed.otro': 'Editar otro recorrido',
+      'ed.soloEjemplo': 'En el ejemplo no hay .zip completo: cargue el suyo para descargar.',
+      'ed.lotesDe': 'Lotes de {n} · toque un lote para marcarlo vendido o disponible',
+      'ed.sinCambios': 'Todavía no ha cambiado nada.',
+      'ed.cambios': '{v} vendidos y {d} disponibles nuevos{wa}.', 'ed.cambioWa': '; WhatsApp nuevo',
+      'ed.abriendo': 'Abriendo el .zip en segundo plano…', 'ed.rearmando': 'Rearmando el .zip en segundo plano…',
+      'ed.garantia': '<b>✓ Mismo recorrido.</b> {n} entradas entraron y {n} salieron, con los mismos nombres y en el mismo orden. Cambiaron por dentro: {archivos}.',
+      'ed.loteAria': 'Lote {n}: {estado}',
+      'error.sin_script_general': 'Ese .zip no tiene script_general.js: no parece una exportación de 3DVista para web.',
+      'error.sin_lotes': 'El recorrido no tiene polígonos «rojo N»: no hay lotes que editar.',
+      'error.zip_ilegible': 'No se pudo abrir el .zip. Verifique que el archivo esté completo.',
+      'error.identidad_zip': 'Se canceló la descarga: el .zip no salía idéntico al original.',
+      'error.no_se_pudo_rearmar': 'No se pudo rearmar el .zip. Intente de nuevo.',
+      'error.sin_recorrido': 'Primero abra un recorrido.',
+      'error.desconocido': 'Algo salió mal. Intente de nuevo.'
+    },
+    'en': {
+      'ed.etiqueta': 'Edit without touching the .zip',
+      'ed.titulo': 'Mark lots as sold and hand back the same tour',
+      'ed.entrada': 'For clients whose tour is already published: changes are written inside the tour’s own files. No layer or file is added: the .zip comes out with the same entries, in the same order.',
+      'ed.ejemplo': 'Example', 'ed.ejemploNota': 'See how the 45 lots are edited. To download the edited .zip, load the full export.',
+      'ed.usarEjemplo': 'Edit the Cayman Creek example', 'ed.suyo': 'Your tour', 'ed.suyoTitulo': 'Open your .zip',
+      'ed.suyoNota': 'It is opened and rebuilt in your browser, in the background: nothing is uploaded.',
+      'ed.elegirZip': 'Choose .zip', 'ed.disponible': 'Available', 'ed.vendido': 'Sold', 'ed.cambiado': 'Changed by you',
+      'ed.whatsapp': 'Tour WhatsApp (with country code)', 'ed.resumen': 'Changes',
+      'ed.exportar': 'Download edited .zip', 'ed.otro': 'Edit another tour',
+      'ed.soloEjemplo': 'The example has no full .zip: load yours to download.',
+      'ed.lotesDe': 'Lots of {n} · tap a lot to mark it sold or available',
+      'ed.sinCambios': 'Nothing has changed yet.',
+      'ed.cambios': '{v} newly sold and {d} newly available{wa}.', 'ed.cambioWa': '; new WhatsApp',
+      'ed.abriendo': 'Opening the .zip in the background…', 'ed.rearmando': 'Rebuilding the .zip in the background…',
+      'ed.garantia': '<b>✓ Same tour.</b> {n} entries went in and {n} came out, with the same names in the same order. Changed inside: {archivos}.',
+      'ed.loteAria': 'Lot {n}: {estado}',
+      'error.sin_script_general': 'That .zip has no script_general.js: it does not look like a 3DVista web export.',
+      'error.sin_lotes': 'The tour has no “rojo N” polygons: there are no lots to edit.',
+      'error.zip_ilegible': 'The .zip could not be opened. Check that the file is complete.',
+      'error.identidad_zip': 'Download cancelled: the .zip would not have come out identical to the original.',
+      'error.no_se_pudo_rearmar': 'The .zip could not be rebuilt. Please try again.',
+      'error.sin_recorrido': 'Open a tour first.',
+      'error.desconocido': 'Something went wrong. Please try again.'
+    }
+  };
+  var idioma = 'es-CO';
+  function t(k, v) { var s = (TEXTOS[idioma] || {})[k] || TEXTOS['es-CO'][k] || k; Object.keys(v || {}).forEach(function (x) { s = s.split('{' + x + '}').join(v[x]); }); return s; }
+  function errorEd(codigo) { return t('error.' + codigo) !== 'error.' + codigo ? t('error.' + codigo) : t('error.desconocido'); }
+  function traducir() {
+    document.querySelectorAll('#editar [data-t]').forEach(function (el) { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll('.idioma button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.idioma === idioma)); });
+    $('#editar').lang = idioma === 'en' ? 'en' : 'es-CO';
+    if (ed.lotes) pintarLotes();
+    if (ed.ultimaGarantia) mostrarGarantia(ed.ultimaGarantia);
+  }
+  document.querySelectorAll('.idioma button').forEach(function (b) { b.addEventListener('click', function () { idioma = b.dataset.idioma; try { localStorage.setItem('editor-idioma', idioma); } catch (e) {} traducir(); }); });
+  try { var guardado = localStorage.getItem('editor-idioma'); if (guardado && TEXTOS[guardado]) idioma = guardado; } catch (e) {}
+
+  var ed = { modo: null, nombre: '', lotes: null, original: {}, deseado: {}, waOriginal: '', worker: null, ultimaGarantia: null };
+  function estadoEd(texto, err) { var e = $('#ed-estado'); e.textContent = texto || ''; e.className = err ? 'estado-carga error' : 'estado-carga'; }
+  function worker() {
+    if (ed.worker) return ed.worker;
+    ed.worker = new Worker('editar-worker.js');
+    ed.worker.onmessage = function (ev) {
+      var m = ev.data;
+      if (m.tipo === 'error') { estadoEd(errorEd(m.codigo), true); $('#ed-b-exportar').disabled = false; return; }
+      if (m.tipo === 'abierto') { abrirLotes(m.lotes, m.whatsapp, 'zip'); estadoEd(''); }
+      if (m.tipo === 'exportado') {
+        var b = new Blob([m.zip], { type: 'application/zip' });
+        var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (ed.nombre || 'recorrido') + '-editado.zip';
+        document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+        ed.ultimaGarantia = { n: m.entradas, archivos: m.cambiados.join(', ') }; mostrarGarantia(ed.ultimaGarantia);
+        $('#ed-b-exportar').disabled = false; estadoEd('');
+        window.__edExportado = m;
+      }
+    };
+    return ed.worker;
+  }
+  function mostrarGarantia(g) { var el = $('#ed-garantia'); el.hidden = false; el.innerHTML = t('ed.garantia', { n: g.n.toLocaleString(idioma), archivos: g.archivos.replace(/[<>&]/g, '') }); }
+  function abrirLotes(lotes, wa, modo) {
+    ed.modo = modo; ed.lotes = lotes; ed.original = {}; ed.deseado = {}; ed.waOriginal = wa || ''; ed.ultimaGarantia = null;
+    lotes.forEach(function (l) { ed.original[l.lote] = l.estado === 'vendido' ? 'vendido' : 'disponible'; ed.deseado[l.lote] = ed.original[l.lote]; });
+    $('#ed-wa').value = wa || '';
+    $('#ed-1').hidden = true; $('#ed-2').hidden = false; $('#ed-garantia').hidden = true;
+    $('#ed-nota-ejemplo').hidden = modo !== 'ejemplo'; $('#ed-b-exportar').disabled = modo === 'ejemplo';
+    pintarLotes(); $('#editar').scrollIntoView({ block: 'start' });
+  }
+  function cambiosEd() {
+    var estados = {}, v = 0, d = 0;
+    Object.keys(ed.deseado).forEach(function (n) { if (ed.deseado[n] !== ed.original[n]) { estados[n] = ed.deseado[n]; if (ed.deseado[n] === 'vendido') v++; else d++; } });
+    var wa = $('#ed-wa').value.replace(/\D/g, '');
+    return { estados: estados, whatsapp: wa && wa !== ed.waOriginal ? wa : '', v: v, d: d };
+  }
+  function pintarLotes() {
+    $('#ed-titulo-lotes').textContent = t('ed.lotesDe', { n: ed.nombre });
+    var cont = $('#ed-lotes'); cont.innerHTML = '';
+    ed.lotes.forEach(function (l) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lote-b' + (ed.deseado[l.lote] !== ed.original[l.lote] ? ' cambiado' : '');
+      b.textContent = l.lote; b.setAttribute('aria-pressed', String(ed.deseado[l.lote] === 'vendido')); b.dataset.lote = l.lote;
+      b.setAttribute('aria-label', t('ed.loteAria', { n: l.lote, estado: t(ed.deseado[l.lote] === 'vendido' ? 'ed.vendido' : 'ed.disponible') }));
+      b.addEventListener('click', function () { ed.deseado[l.lote] = ed.deseado[l.lote] === 'vendido' ? 'disponible' : 'vendido'; ed.ultimaGarantia = null; $('#ed-garantia').hidden = true; pintarLotes(); });
+      cont.appendChild(b);
+    });
+    resumenEd();
+  }
+  function resumenEd() {
+    var c = cambiosEd();
+    $('#ed-resumen').textContent = c.v || c.d || c.whatsapp ? t('ed.cambios', { v: c.v, d: c.d, wa: c.whatsapp ? t('ed.cambioWa') : '' }) : t('ed.sinCambios');
+  }
+  $('#ed-wa').addEventListener('input', resumenEd);
+  $('#ed-b-ejemplo').addEventListener('click', function () {
+    var base = 'ejemplo/cayman-creek/';
+    Promise.all(['script_general.js', 'locale/es.txt'].map(function (f) { return fetch(base + f).then(function (r) { if (!r.ok) throw new Error(); return r.text(); }); }))
+      .then(function (v) { ed.nombre = 'Cayman Creek'; var tx = { 'script_general.js': v[0], 'locale/es.txt': v[1] }; abrirLotes(Editor3DVista.lotes(tx), Editor3DVista.whatsappActual(tx), 'ejemplo'); })
+      .catch(function () { estadoEd(errorEd('zip_ilegible'), true); });
+  });
+  $('#ed-zip').addEventListener('change', function () {
+    var f = this.files[0]; if (!f) return;
+    ed.nombre = f.name.replace(/\.zip$/i, '');
+    estadoEd(t('ed.abriendo'));
+    worker().postMessage({ tipo: 'abrir', archivo: f });
+  });
+  $('#ed-b-exportar').addEventListener('click', function () {
+    if (ed.modo !== 'zip') return;
+    var c = cambiosEd(); this.disabled = true; estadoEd(t('ed.rearmando'));
+    worker().postMessage({ tipo: 'exportar', cambios: { estados: c.estados, whatsapp: c.whatsapp } });
+  });
+  $('#ed-b-otro').addEventListener('click', function () { $('#ed-2').hidden = true; $('#ed-1').hidden = false; $('#ed-zip').value = ''; estadoEd(''); ed.lotes = null; });
+  traducir();
+
   if (location.hash === '#probar-cayman') usarEjemplo();
 })();
 </script>

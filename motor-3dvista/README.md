@@ -52,10 +52,22 @@ Construye con un proyecto ficticio y comprueba que el motor no trae nada de
 ningún proyecto metido en el código. Las pruebas de punta a punta en navegador
 (52) viven en cada proyecto: `04-CAYMAN-CREEK/pruebas/prueba-cayman.js`.
 
+## Editar sin tocar el .zip (`editor/editar.js`)
+
+El camino de «republicar» de EDITOR: marca lotes vendidos o disponibles y cambia el
+WhatsApp escribiendo dentro de `script_general.js`, `script_mobile.js` y `locale/*.txt`,
+y rearma el `.zip` con las mismas entradas en el mismo orden. Vender y volver a dejar
+disponible devuelve el archivo original byte a byte. En el navegador corre dentro de
+un *web worker* (`docs/editar-worker.js`), así la página no se congela.
+
+```text
+node pruebas/prueba-editor.js <exportacion-3dvista>
+```
+
 ## Relación con el resto de EDITOR
 
-Este módulo **no** es el camino de «republicar» de EDITOR. Ese camino exige la
-identidad del `.zip` (sale entrada por entrada igual que entró); el motor, en
-cambio, agrega archivos (colores de lotes, capa UX) y quita imágenes que ya no se
-ven. Es una herramienta de **optimización** que produce un sitio derivado.
+`motor/construir.py` **no** es el camino de «republicar»: agrega archivos (colores
+de lotes, capa UX) y quita imágenes que ya no se ven. Es una herramienta de
+**optimización** que produce un sitio derivado. El camino de «republicar», con la
+identidad del `.zip`, es `editor/editar.js`.
 Está en Python + JavaScript de navegador, fuera de `src/`. Ver `docs/05-estado.md`.

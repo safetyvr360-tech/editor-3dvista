@@ -84,7 +84,7 @@
   .app__row { height: 52px; border-bottom: 1px solid var(--u-line); font: 400 15px/1.2 var(--font-text); font-variant-numeric: tabular-nums; }
   .app__row b { font-weight: 500; }
   .app__row.is-new { background: #f4f7ff; }
-  .app__pane--open img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 60%; display: block; }
+  .app__pane--open img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 60%; display: block; }
   @media (min-width: 1024px) and (max-width: 1279px) { .app.ui { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); } .app__cols, .app__row { grid-template-columns: 52px 1fr auto; } .app__cols > :nth-child(3), .app__row > :nth-child(3) { display: none; } }
   @media (max-width: 1023px) {
     .app.ui { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
@@ -95,7 +95,7 @@
   @media (max-width: 639px) { .app.ui { grid-template-rows: minmax(0, 1fr); } .app > .app__pane--list { display: none; } .app > .app__pane + .app__pane { border-top: 0; } }
 
   /* paneles de los pasos */
-  #pasos .panel { --p-h: 232px; }
+  #pasos .panel { --p-h: 276px; }
   .panel .pc-hoja, .panel .pc-veredicto { position: absolute; left: 24px; right: 24px; top: 24px; }
   .panel .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
   
@@ -119,6 +119,7 @@
   /* antes y después */
   .par { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin-top: var(--s-7); }
   .par img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: var(--r-lg); display: block; }
+  @media (min-width: 1024px) and (max-width: 1279px) { .par img { aspect-ratio: 3 / 2; } }
   @media (max-width: 639px) { .par { grid-template-columns: 1fr; gap: var(--s-4); } }
 
   .idioma-b { font: 500 15px/1 var(--font-text); background: none; border: 0; padding: 0 8px; min-height: 44px; color: var(--ink); cursor: pointer; }
@@ -126,6 +127,28 @@
   .hero--triptych .hero__cta .btn { height: var(--btn-h); font: 500 16px/1 var(--font-text); letter-spacing: 0; padding-inline: var(--s-5); }
   #editor .frame--split { --ratio: 100%; }
   .mo-la__sub { color: var(--ink); }
+  /* tableta (640 a 1023): cada sección en sus pantallas */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #pasos { --h: 2; }
+    #pasos .panel { width: 48%; }
+    #editor .frame--split { --ratio: 50%; }
+    .par { grid-template-columns: 1fr; }
+    .par img { aspect-ratio: 5 / 2; }
+  }
+  /* bajo 1024 el collage se apila: la imagen arriba a todo lo ancho y la pieza de datos debajo */
+  @media (max-width: 1023px) {
+    .ly-collage .pz-a, .ly-collage .pz-d { left: 0 !important; top: 0 !important; width: 100% !important; height: 56% !important; }
+    .ly-collage .pz-c, .ly-collage .pz-g { left: 0 !important; top: 62% !important; width: 49% !important; height: auto !important; }
+    .ly-collage .pz-b, .ly-collage .pz-e, .ly-collage .pz-f { display: none; }
+    .app__pane--list .app__row:nth-of-type(n+6) { display: none; }
+  }
+  #pasos { --hm: 2; }
+  @media (max-width: 639px) {
+    .ly-collage .pz-c, .ly-collage .pz-g { display: none; }
+    .ly-collage .pz-a, .ly-collage .pz-d { height: 100% !important; }
+    #editor .frame--split { --ratio: 60%; }
+    #preguntas .faq-intro, #preguntas [data-movil="oculto"] { display: none; }
+  }
   @media (max-width: 639px) { .ly-collage .pc-hoja .f { grid-template-columns: 1fr auto; } .ly-collage .pc-hoja .f > span:nth-child(2) { display: none; } #estado .mo-la__type { font-size: 84px; } #estado .mo-la__sub { font-size: 20px; } #pasos .panel { --p-h: 168px; } }
 </style>
 </head>
@@ -143,7 +166,7 @@
       <div class="nav__item"><a class="nav__link" href="#producto" data-en="Product">Producto</a></div>
       <div class="nav__item"><a class="nav__link" href="#pasos" data-en="Steps">Pasos</a></div>
       <div class="nav__item"><a class="nav__link" href="#editor">Editor</a></div>
-      <div class="nav__item"><a class="nav__link" href="#antes" data-en="Before">Antes</a></div>
+      <div class="nav__item"><a class="nav__link" href="#antes" data-en="Before and after">Antes y después</a></div>
       <div class="nav__item"><a class="nav__link" href="#preguntas" data-en="Questions">Preguntas</a></div>
     </nav>
     <div class="nav__actions">
@@ -165,9 +188,9 @@
       </div>
       <div class="ly-collage span-6 start-4" role="img" aria-label="El recorrido de Cayman Creek con sus lotes de colores, la ficha de un lote en el teléfono y la hoja de estados que los controla" data-en-label="The Cayman Creek tour with its coloured lots, a lot's card on a phone and the status sheet that drives them">
         <div class="ly-collage__set is-on">
-          <div class="ly-piece" style="left: 4%; top: 6%; width: 62%; height: 50%"><img src="img/03-ficha-lote-disponible.webp" alt="" style="object-position: 50% 45%" data-source="client" data-subject="ficha de un lote disponible sobre el recorrido"></div>
-          <div class="ly-piece" style="left: 70%; top: 30%; width: 26%; height: 66%"><img src="img/13-telefono-ficha.webp" alt="" style="object-position: 50% 40%" data-source="client" data-subject="ficha de un lote en el teléfono"></div>
-          <div class="ly-piece pc-hoja" style="left: 4%; top: 62%; width: 60%">
+          <div class="ly-piece pz-a" style="left: 4%; top: 6%; width: 62%; height: 50%"><img src="img/03-ficha-lote-disponible.webp" srcset="img/03-ficha-lote-disponible-720.webp 720w, img/03-ficha-lote-disponible.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" alt="" style="object-position: 50% 45%" data-source="client" data-subject="ficha de un lote disponible sobre el recorrido"></div>
+          <div class="ly-piece pz-b" style="left: 70%; top: 30%; width: 26%; height: 66%"><img src="img/13-telefono-ficha.webp" srcset="img/13-telefono-ficha-360.webp 360w, img/13-telefono-ficha.webp 640w" sizes="(max-width: 1023px) 30vw, 180px" width="640" height="1090" alt="" style="object-position: 50% 40%" data-source="client" data-subject="ficha de un lote en el teléfono"></div>
+          <div class="ly-piece pz-c pc-hoja ui" style="left: 4%; top: 62%; width: 60%">
             <div class="t"><span data-en="Status sheet">Hoja de estados</span><span>Google</span></div>
             <div class="f"><b data-en="Lot 17">Lote 17</b><span>887 m²</span><span class="st st--d" data-en="Available">Disponible</span></div>
             <div class="f"><b data-en="Lot 15">Lote 15</b><span>968 m²</span><span class="st st--r" data-en="Reserved">Reservado</span></div>
@@ -175,13 +198,13 @@
           </div>
         </div>
         <div class="ly-collage__set" aria-hidden="true">
-          <div class="ly-piece" style="left: 4%; top: 6%; width: 58%; height: 52%"><img src="img/08-plano-maestro.webp" alt="" style="object-position: 50% 50%" data-source="client" data-subject="plano maestro dentro del aplicativo"></div>
-          <div class="ly-piece" style="left: 66%; top: 6%; width: 30%; height: 44%"><img src="img/tableta-ficha.webp" alt="" style="object-position: 50% 40%" data-source="client" data-subject="ficha de un lote en una tableta"></div>
-          <div class="ly-piece pc-lotes" style="left: 4%; top: 64%; width: 40%">
+          <div class="ly-piece pz-d" style="left: 4%; top: 6%; width: 58%; height: 52%"><img src="img/08-plano-maestro.webp" srcset="img/08-plano-maestro-720.webp 720w, img/08-plano-maestro.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" alt="" style="object-position: 50% 50%" data-source="client" data-subject="plano maestro dentro del aplicativo"></div>
+          <div class="ly-piece pz-e" style="left: 66%; top: 6%; width: 30%; height: 44%"><img src="img/tableta-ficha.webp" width="548" height="382" alt="" style="object-position: 50% 40%" data-source="client" data-subject="ficha de un lote en una tableta"></div>
+          <div class="ly-piece pz-f pc-lotes ui" style="left: 4%; top: 64%; width: 40%">
             <span class="t">Cayman Creek</span>
             <div class="rejilla"><i>11</i><i class="v">12</i><i>13</i><i>14</i><i class="r">15</i><i>16</i><i>17</i><i class="v">18</i><i>19</i><i>20</i></div>
           </div>
-          <div class="ly-piece pc-veredicto" style="left: 50%; top: 56%; width: 46%; height: 40%">
+          <div class="ly-piece pz-g pc-veredicto ui" style="left: 50%; top: 56%; width: 46%; height: 40%">
             <span class="ok" data-en="Compatible tour">Recorrido compatible</span>
             <dl><dt data-en="Lots found">Lotes encontrados</dt><dd>45</dd><dt data-en="Aerial views">Vistas aéreas</dt><dd>2</dd><dt data-en="Blocks">Manzanas</dt><dd>4</dd></dl>
           </div>
@@ -196,8 +219,8 @@
       <div class="grid">
         <h2 class="span-5" id="producto-h" data-en="Every lot in the tour, with its status">Cada lote del recorrido, con su estado</h2>
         <div class="span-6 start-7 stack-4">
-          <p data-en="On the left, the Cayman Creek status sheet; on the right, the tour its buyers see. A change in the sheet reaches the tour within 15 seconds.">A la izquierda, la hoja de estados de Cayman Creek; a la derecha, el recorrido que ven sus compradores. Un cambio en la hoja llega al recorrido en 15 segundos.</p>
-          <a class="link" href="../cayman-creek/index.htm" data-en="Open Cayman Creek live">Abrir Cayman Creek en vivo</a>
+          <p data-en="The Cayman Creek status sheet and the tour its buyers see: a change in the sheet reaches the tour within 15 seconds.">La hoja de estados de Cayman Creek y el recorrido que ven sus compradores: un cambio en la hoja llega al recorrido en 15 segundos.</p>
+          <a class="link" href="../cayman-creek/index.htm" data-en="See the demo">Ver la demo</a>
         </div>
       </div>
       <div class="ui app fill" role="img" aria-label="La hoja de estados de Cayman Creek junto al recorrido aéreo con los lotes pintados según esa hoja" data-en-label="The Cayman Creek status sheet beside the aerial tour with the lots painted from that sheet">
@@ -216,12 +239,12 @@
           <div class="app__row"><b>41</b><span>C</span><span>933 m²</span><span class="st st--d" data-en="Available">Disponible</span></div>
           <div class="app__row"><b>44</b><span>C</span><span>814 m²</span><span class="st st--d" data-en="Available">Disponible</span></div>
         </div>
-        <div class="app__pane app__pane--open"><img src="img/10-vista-aerea-2.webp" alt="" data-source="client" data-subject="vista aérea 2 de Cayman Creek con lotes por estado"></div>
+        <div class="app__pane app__pane--open"><img src="img/10-vista-aerea-2.webp" srcset="img/10-vista-aerea-2-720.webp 720w, img/10-vista-aerea-2.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" loading="lazy" alt="" data-source="client" data-subject="vista aérea 2 de Cayman Creek con lotes por estado"></div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="pasos" style="--h: 1; --hm: 2" aria-labelledby="pasos-h">
+  <section class="section" id="pasos" aria-labelledby="pasos-h">
     <div class="wrap">
       <div class="section-head">
         <h2 id="pasos-h" data-en="Your tour on sale in 3 steps">Su recorrido en venta en 3 pasos</h2>
@@ -230,9 +253,9 @@
         <article class="card card--row card--open span-4">
           <span class="step-num">1</span>
           <h3 class="t-card" data-en="Upload the 3DVista export">Suba la exportación de 3DVista</h3>
-          <p data-en="The platform checks the .zip in your browser and finds the polygons named “rojo 1”, “rojo 2”…">La plataforma revisa el .zip en su navegador y encuentra los polígonos llamados «rojo 1», «rojo 2»…</p>
+          <p data-en="The platform checks the .zip in your browser and finds every lot.">La plataforma revisa el .zip en su navegador y encuentra cada lote.</p>
           <div class="panel">
-            <div class="pc-veredicto">
+            <div class="pc-veredicto ui">
               <span class="ok" data-en="Compatible tour">Recorrido compatible</span>
               <dl><dt data-en="Lots found">Lotes encontrados</dt><dd>45</dd><dt data-en="Blocks detected">Manzanas detectadas</dt><dd>33 / 45</dd><dt data-en="To review by hand">Por revisar a mano</dt><dd>12</dd></dl>
             </div>
@@ -243,7 +266,7 @@
           <h3 class="t-card" data-en="Connect the status sheet">Conecte la hoja de estados</h3>
           <p data-en="A Google sheet with the lot and its status. Whoever edits it changes the lot’s colour.">Una hoja de Google con el lote y su estado. Quien la edite cambia el color del lote.</p>
           <div class="panel">
-            <div class="pc-hoja">
+            <div class="pc-hoja ui">
               <div class="t"><span data-en="lot, status">lote, estado</span><span>CSV</span></div>
               <div class="f"><b>41</b><span></span><span class="st st--d" data-en="Available">Disponible</span></div>
               <div class="f"><b>44</b><span></span><span class="st st--r" data-en="Reserved">Reservado</span></div>
@@ -254,8 +277,8 @@
         <article class="card card--row card--open span-4">
           <span class="step-num">3</span>
           <h3 class="t-card" data-en="Publish the app">Publique el aplicativo</h3>
-          <p data-en="A static site for any hosting, with a card for every lot and a WhatsApp button.">Sale un sitio estático para cualquier hosting, con la ficha de cada lote y el botón de WhatsApp.</p>
-          <div class="panel"><img class="shot" src="img/04-ficha-lote-reservado.webp" alt="La ficha de un lote reservado de Cayman Creek, con su área y el botón de WhatsApp" data-en-alt="The card of a reserved Cayman Creek lot, with its area and the WhatsApp button" data-source="client" data-subject="ficha de lote reservado"></div>
+          <p data-en="A static site with a card for every lot and a WhatsApp button.">Sale un sitio estático con la ficha de cada lote y botón de WhatsApp.</p>
+          <div class="panel"><img class="shot" src="img/04-ficha-lote-reservado.webp" srcset="img/04-ficha-lote-reservado-720.webp 720w, img/04-ficha-lote-reservado.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" loading="lazy" alt="La ficha de un lote reservado de Cayman Creek, con su área y el botón de WhatsApp" data-en-alt="The card of a reserved Cayman Creek lot, with its area and the WhatsApp button" data-source="client" data-subject="ficha de lote reservado"></div>
         </article>
       </div>
     </div>
@@ -274,8 +297,7 @@
         <div class="span-5 stack-4">
           <h2 id="editor-h" data-en="The editor changes statuses inside the .zip">El editor cambia estados dentro del .zip</h2>
           <p class="t-lead" data-en="For tours already published: the editor changes lot statuses and the WhatsApp number inside the tour’s own files.">Para recorridos ya publicados: el editor cambia estados y WhatsApp dentro de los archivos del propio recorrido.</p>
-          <p data-en="In Cayman Creek 3,059 entries go in and 3,059 come out, in the same order.">En Cayman Creek entran 3.059 entradas y salen 3.059, en el mismo orden.</p>
-          <p data-en="Everything runs in your browser: the .zip is not uploaded anywhere.">Todo ocurre en su navegador: el .zip no se sube a ningún lado.</p>
+          <p data-en="In Cayman Creek 3,059 entries go in and 3,059 come out, in the same order, and nothing is uploaded: it all runs in your browser.">En Cayman Creek entran 3.059 entradas y salen 3.059, en el mismo orden, y nada se sube: todo ocurre en su navegador.</p>
           <a class="link" href="../index.html#editar" data-en="Open the editor">Abrir el editor</a>
         </div>
         <div class="frame frame--split span-6 start-7">
@@ -297,12 +319,12 @@
   <section class="section" id="antes" aria-labelledby="antes-h">
     <div class="wrap">
       <div class="grid">
-        <h2 class="span-5" id="antes-h" data-en="From the 3DVista export to a sales app">Del recorrido exportado al aplicativo de venta</h2>
-        <p class="span-6 start-7" data-en="Left, the tour as 3DVista exports it. Right, the same tour with lot statuses, labels that follow the camera and its own loading screen.">A la izquierda, el recorrido como lo exporta 3DVista. A la derecha, el mismo recorrido con estados de lote, etiquetas que siguen la cámara y su propia pantalla de carga.</p>
+        <h2 class="span-5" id="antes-h" data-en="Before and after in Cayman Creek">Antes y después en Cayman Creek</h2>
+        <p class="span-6 start-7" data-en="Left, the lots as 3DVista exports them. Right, the same lots in the EDITOR app, painted by their status.">A la izquierda, los lotes como los exporta 3DVista. A la derecha, los mismos lotes en el aplicativo de EDITOR, pintados según su estado.</p>
       </div>
       <div class="par">
-        <img src="img/antes-lotes.webp" alt="Los lotes 15, 16 y 41 a 44 de Cayman Creek como salen de 3DVista, sin estado" data-en-alt="Cayman Creek lots 15, 16 and 41 to 44 as exported by 3DVista, with no status" data-source="client" data-subject="recorrido exportado" loading="lazy">
-        <img src="img/despues-lotes.webp" alt="La misma vista en el aplicativo de EDITOR, con los lotes en verde, naranja y rojo" data-en-alt="The same view in the EDITOR app, with lots in green, orange and red" data-source="client" data-subject="aplicativo de venta" loading="lazy">
+        <img src="img/antes-lotes.webp" srcset="img/antes-lotes-720.webp 720w, img/antes-lotes.webp 1000w" sizes="(max-width: 1023px) 100vw, 45vw" width="1000" height="400" alt="Los lotes 15, 16 y 41 a 44 de Cayman Creek como salen de 3DVista, sin estado" data-en-alt="Cayman Creek lots 15, 16 and 41 to 44 as exported by 3DVista, with no status" data-source="client" data-subject="recorrido exportado" loading="lazy">
+        <img src="img/despues-lotes.webp" srcset="img/despues-lotes-720.webp 720w, img/despues-lotes.webp 1000w" sizes="(max-width: 1023px) 100vw, 45vw" width="1000" height="400" alt="La misma vista en el aplicativo de EDITOR, con los lotes en verde, naranja y rojo" data-en-alt="The same view in the EDITOR app, with lots in green, orange and red" data-source="client" data-subject="aplicativo de venta" loading="lazy">
       </div>
     </div>
   </section>
@@ -312,13 +334,13 @@
       <div class="grid">
         <div class="span-5 stack-4">
           <h2 id="preguntas-h" data-en="Questions">Preguntas</h2>
-          <p data-en="What 3DVista studios and developers ask before trying it.">Lo que preguntan los estudios de 3DVista y las constructoras antes de probarlo.</p>
+          <p class="faq-intro" data-en="What 3DVista studios and developers ask first.">Lo primero que preguntan estudios y constructoras.</p>
           <a class="link" href="mailto:ultramediaco1@gmail.com?subject=EDITOR" data-en="Write to us">Escríbanos</a>
         </div>
         <div class="faq span-6 start-7">
-          <div class="faq__item"><h3 data-en="What do I need from 3DVista?">¿Qué necesito de 3DVista?</h3><p data-en="The web export of the tour, with each lot drawn as a polygon named “rojo 1”, “rojo 2” and so on.">La exportación web del recorrido, con cada lote dibujado como un polígono llamado «rojo 1», «rojo 2» y así.</p></div>
+          <div class="faq__item"><h3 data-en="What do I need from 3DVista?">¿Qué necesito de 3DVista?</h3><p data-en="The web export, with each lot as a polygon named “rojo 1”, “rojo 2”…">La exportación web, con cada lote como un polígono llamado «rojo 1», «rojo 2»…</p></div>
           <div class="faq__item"><h3 data-en="Are my files uploaded to a server?">¿Mis archivos se suben a un servidor?</h3><p data-en="No. The check and the editor open the .zip in your browser.">No. El análisis y el editor abren el .zip en su navegador.</p></div>
-          <div class="faq__item"><h3 data-en="Who changes the lot statuses?">¿Quién cambia los estados de los lotes?</h3><p data-en="Anyone with edit access to the Google sheet: sales, the developer or the agency.">Cualquiera con permiso para editar la hoja de Google: el equipo de ventas, la constructora o la agencia.</p></div>
+          <div class="faq__item" data-movil="oculto"><h3 data-en="Who changes the lot statuses?">¿Quién cambia los estados de los lotes?</h3><p data-en="Anyone with edit access to the Google sheet.">Cualquiera con permiso para editar la hoja de Google.</p></div>
           <div class="faq__item"><h3 data-en="Does it detect every block on its own?">¿Detecta solo todas las manzanas?</h3><p data-en="Not always. In Cayman Creek it placed 33 of 45 lots in their block; the rest are checked by hand.">No siempre. En Cayman Creek ubicó 33 de los 45 lotes en su manzana; el resto se revisa a mano.</p></div>
                     <div class="faq__item"><h3 data-en="How much does it cost?">¿Cuánto cuesta?</h3><p data-en="The price depends on the project. Write to us with the number of lots and views.">El precio depende del proyecto. Escríbanos con el número de lotes y de vistas.</p></div>
         </div>
@@ -327,8 +349,8 @@
   </section>
 </main>
 
-<footer class="footer closing" id="contact" aria-labelledby="close-h">
-  <div class="wrap">
+<footer class="footer closing" id="contact" style="--hm: 2" aria-labelledby="close-h">
+  <div class="wrap g2m">
     <div class="closing__cta close--word">
       <div class="section-head--split">
         <div><h2 id="close-h" data-en="Put your 3DVista project on sale">Ponga en venta su proyecto 3DVista</h2><p class="t-lead" data-en="The check runs in your browser and takes a few seconds.">El análisis corre en su navegador y tarda unos segundos.</p></div>

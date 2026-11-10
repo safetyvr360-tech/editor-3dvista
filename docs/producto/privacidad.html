@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es-CO" data-type="software" data-radius="soft" data-buttons="tonal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EDITOR: privacidad</title>
+<meta name="description" content="Qué datos usa el sitio de EDITOR y la plataforma de venta de lotes en 3DVista.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<style>
+:root {
+  --p-bg: #ffffff; --p-surface: #f4f4f4; --p-ink: #111111; --p-muted: #6b6b6b;
+  --p-accent: #1a4be0; --p-accent-ink: #ffffff; --p-action: #1a4be0; --p-action-ink: #ffffff;
+  --font-display: "Epilogue", system-ui, sans-serif; --font-text: "Epilogue", system-ui, sans-serif;
+  --display-weight: 400; --display-tracking: -0.035em;
+}
+.doc { padding: calc(var(--nav) + var(--s-8)) 0 var(--s-9); }
+.doc .wrap { max-width: 760px; }
+.doc h1 { font: var(--display-weight) clamp(36px, 4vw, 56px)/1.05 var(--font-display); letter-spacing: var(--display-tracking); margin: 0 0 var(--s-6); }
+.doc h2 { font: 500 20px/1.3 var(--font-text); margin: var(--s-7) 0 var(--s-3); }
+.doc p, .doc li { font-size: 17px; line-height: 1.65; }
+.doc .fecha { color: var(--p-muted); font-size: 14px; }
+.idioma-b { font: 500 15px/1 var(--font-text); background: none; border: 0; padding: 0 8px; min-height: 44px; color: var(--ink); cursor: pointer; }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top" data-en="Skip to content">Saltar al contenido</a>
+    <a class="nav__logo" href="index.html"><span class="mark" data-mark="arc" aria-hidden="true"></span>EDITOR</a>
+    <div class="nav__actions" style="display:flex">
+      <button class="idioma-b" type="button" data-idioma-b lang="en" data-en="ES">EN</button>
+      <a class="btn btn--secondary" href="index.html" data-en="Back to EDITOR">Volver a EDITOR</a>
+    </div>
+  </div>
+</header>
+<main id="top" class="doc">
+  <div class="wrap">
+    <h1 data-en="Privacy">Privacidad</h1>
+    <p class="fecha" data-en="Updated on 10 November 2026">Actualizada el 10 de noviembre de 2026</p>
+
+    <h2 data-en="Your tour files">Los archivos de su recorrido</h2>
+    <p data-en="The compatibility check and the editor open your 3DVista .zip inside your own browser. The file is not uploaded to ULTRAMEDIA or to any other server.">El análisis de compatibilidad y el editor abren el .zip de 3DVista dentro de su propio navegador. El archivo no se sube a ULTRAMEDIA ni a ningún otro servidor.</p>
+
+    <h2 data-en="The status sheet">La hoja de estados</h2>
+    <p data-en="A published sales app reads the lot statuses from the Google sheet its owner publishes. That sheet holds lot numbers, statuses, prices and notes; it should not hold buyers’ names or contact details.">Un aplicativo de venta publicado lee los estados de los lotes desde la hoja de Google que publica su dueño. Esa hoja lleva números de lote, estados, precios y notas; no debe llevar nombres ni datos de contacto de compradores.</p>
+
+    <h2 data-en="What this site stores">Lo que guarda este sitio</h2>
+    <p data-en="Only your language choice (Spanish or English), saved in your browser. There are no forms, no accounts and no advertising cookies.">Solo su elección de idioma (español o inglés), guardada en su navegador. No hay formularios, cuentas ni cookies de publicidad.</p>
+
+    <h2 data-en="Third-party services">Servicios de terceros</h2>
+    <p data-en="The site is hosted on GitHub Pages and loads its typeface from Google Fonts. Both services receive your IP address when the page loads, under their own privacy policies.">El sitio está alojado en GitHub Pages y carga su tipografía desde Google Fonts. Ambos servicios reciben su dirección IP al cargar la página, bajo sus propias políticas de privacidad.</p>
+
+    <h2 data-en="Contact">Contacto</h2>
+    <p data-en="If you write to us, we use your email only to reply. For any question about your data, write to us.">Si nos escribe, usamos su correo solo para responderle. Para cualquier pregunta sobre sus datos, escríbanos.</p>
+    <p><a class="link" href="mailto:ultramediaco1@gmail.com?subject=Privacidad%20EDITOR" data-en="Email us">Escríbanos un correo</a></p>
+  </div>
+</main>
+<script>
+(function () {
+  var bs = document.querySelectorAll('[data-idioma-b]'), en = false;
+  function cambiar(aEn) {
+    en = aEn; document.documentElement.lang = en ? 'en' : 'es-CO';
+    document.querySelectorAll('[data-en]').forEach(function (el) {
+      if (el.dataset.es === undefined) el.dataset.es = el.textContent;
+      el.textContent = en ? el.dataset.en : el.dataset.es;
+    });
+    document.title = en ? 'EDITOR: privacy' : 'EDITOR: privacidad';
+    bs.forEach(function (x) { x.lang = en ? 'es' : 'en'; });
+    try { localStorage.setItem('editor-idioma', en ? 'en' : 'es-CO'); } catch (e) {}
+  }
+  bs.forEach(function (x) { x.addEventListener('click', function () { cambiar(!en); }); });
+  var pedido = (location.search.match(/[?&]lang=(en|es)\b/) || [])[1];
+  if (pedido) cambiar(pedido === 'en'); else { try { if (localStorage.getItem('editor-idioma') === 'en') cambiar(true); } catch (e) {} }
+})();
+</script>
+</body>
+</html>

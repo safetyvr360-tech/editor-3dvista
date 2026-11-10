@@ -9,6 +9,9 @@
 <meta property="og:title" content="EDITOR: app de venta de lotes en recorridos 3DVista">
 <meta property="og:description" content="Los lotes de su recorrido 3DVista en verde, naranja o rojo, actualizados desde una hoja de Google en 15 segundos.">
 <meta property="og:url" content="https://safetyvr360-tech.github.io/editor-3dvista/producto/">
+<link rel="alternate" hreflang="es-CO" href="https://safetyvr360-tech.github.io/editor-3dvista/producto/">
+<link rel="alternate" hreflang="en" href="https://safetyvr360-tech.github.io/editor-3dvista/producto/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://safetyvr360-tech.github.io/editor-3dvista/producto/">
 <meta property="og:image" content="https://safetyvr360-tech.github.io/editor-3dvista/producto/share.jpg">
 <meta property="og:image:width" content="1440">
 <meta property="og:image:height" content="900">
@@ -394,7 +397,7 @@
         <div class="span-2 footer__col"><h3 data-en="Contact">Contacto</h3><ul><li><a href="#preguntas" data-en="Questions">Preguntas</a></li><li><a href="mailto:ultramediaco1@gmail.com?subject=EDITOR" data-en="Email us">Escríbanos un correo</a></li></ul></div>
       </div>
       <div class="footer__legal">
-        <span>&copy; 2026 ULTRAMEDIA &nbsp; <button class="link idioma-pie" type="button" data-idioma-b lang="en" data-en="Español">English</button></span>
+        <span>&copy; 2026 ULTRAMEDIA &nbsp; <a class="link" href="privacidad.html" data-en="Privacy">Privacidad</a> &nbsp; <button class="link idioma-pie" type="button" data-idioma-b lang="en" data-en="Español">English</button></span>
         <div class="socials"></div>
         <span class="credits" data-en="3DVista, Google Sheets and WhatsApp are trademarks of their owners">3DVista, Google Sheets y WhatsApp son marcas de sus dueños</span>
       </div>
@@ -416,7 +419,10 @@
     document.querySelectorAll('[data-en]').forEach(function (el) {
       if (el.dataset.es === undefined) el.dataset.es = el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.nodeValue : el.textContent;
       var t = en ? el.dataset.en : el.dataset.es;
-      if (el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = t; else el.textContent = t;
+      if (el.firstChild && el.firstChild.nodeType === 3 && el.childNodes.length === 1) el.firstChild.nodeValue = t;
+      else if (el.firstChild && el.firstChild.nodeType === 3 && el.querySelector('svg')) el.firstChild.nodeValue = t;
+      else el.textContent = t;
+      if (el.hasAttribute('aria-label') && !el.dataset.enLabel) el.setAttribute('aria-label', t);
     });
     document.querySelectorAll('[data-en-label]').forEach(function (el) {
       if (el.dataset.esLabel === undefined) el.dataset.esLabel = el.getAttribute('aria-label');
@@ -434,7 +440,13 @@
     try { localStorage.setItem('editor-idioma', en ? 'en' : 'es-CO'); } catch (e) {}
   }
   bs.forEach(function (x) { x.addEventListener('click', function () { cambiar(!en); }); });
-  try { if (localStorage.getItem('editor-idioma') === 'en') cambiar(true); } catch (e) {}
+  // ?lang=en abre la página en inglés (para enviarla a clientes de fuera); si no, se respeta la última elección
+  var pedido = (location.search.match(/[?&]lang=(en|es)(?:&|$)/) || [])[1];
+  // después de que el kit termina de medir el inicio (layout.js deja el h1 como estaba al cargar)
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(function () {
+    if (pedido) cambiar(pedido === 'en');
+    else { try { if (localStorage.getItem('editor-idioma') === 'en') cambiar(true); } catch (e) {} }
+  }, 60); });
 })();
 </script>
 <script type="module" src="assets/system.js"></script>

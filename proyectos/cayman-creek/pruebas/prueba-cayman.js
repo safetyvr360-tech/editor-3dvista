@@ -74,8 +74,21 @@ async function abrir(b, opciones, nombre) {
   // 3a. Lo que se VE en pantalla (no solo el estado interno): 3DVista a veces no dibuja un lote encendido
   const colorEsperado = { disponible: 'verde', reservado: 'naranja', vendido: 'rojo' };
   const colorDe = ([h, sat]) => sat < 0.25 ? 'gris' : (h >= 70 && h <= 170 ? 'verde' : h >= 18 && h < 55 ? 'naranja' : (h < 18 || h > 330) ? 'rojo' : 'otro');
-  async function coloresEnPantalla(nombreFoto) {
+  // En un equipo lento 3DVista tarda varios segundos en dibujar un lote ya encendido (medido en Windows:
+  // entre 3 y 10 s). Se mira a los 4 s y, si algo no coincide, otra vez cada segundo hasta los 15 s.
+  // Un lote que de verdad no se pinta sigue fallando; la foto que queda es la última.
+  async function coloresEnPantalla(nombreFoto, limiteMs = 15000) {
+    const t0 = Date.now();
     await p.waitForTimeout(4000);
+    let c = await muestraDeColores(nombreFoto);
+    while (c.malos.length && Date.now() - t0 < limiteMs) {
+      await p.waitForTimeout(1000);
+      c = await muestraDeColores(nombreFoto);
+    }
+    c.segundos = Math.round((Date.now() - t0) / 1000);
+    return c;
+  }
+  async function muestraDeColores(nombreFoto) {
     const r = await p.evaluate((lotes) => {
       const P = window.tour.player; const pl = P.getByClassName('PanoramaPlayer')[0]; const pid = pl.get('panorama').get('id');
       const est = window.UX._estado().estados; const out = {};
@@ -98,7 +111,7 @@ async function abrir(b, opciones, nombre) {
     return { revisados: Object.keys(tonos).length, malos };
   }
   const c1 = await coloresEnPantalla('02b-colores-vista-1.png');
-  ok(c1.revisados >= 5 && c1.malos.length === 0, 'PANTALLA: en la vista aérea 1 los lotes se VEN con el color de la hoja (' + c1.revisados + ' revisados' + (c1.malos.length ? '; mal: ' + c1.malos.join(', ') : '') + ')');
+  ok(c1.revisados >= 5 && c1.malos.length === 0, 'PANTALLA: en la vista aérea 1 los lotes se VEN con el color de la hoja (' + c1.revisados + ' revisados en ' + c1.segundos + ' s' + (c1.malos.length ? '; mal: ' + c1.malos.join(', ') : '') + ')');
 
   // 3b. Bug de la beta: «rojo 6» y «rojo 39» eran grises; ahora usan un rojo de verdad
   const sg = fs.readFileSync(path.join(__dirname, '..', 'salida', 'tour', 'script_general.js'), 'utf8');
@@ -176,7 +189,7 @@ async function abrir(b, opciones, nombre) {
   ok(Math.abs(cam[0] - (-18.5)) < 3 && Math.abs(cam[1] - (-24)) < 3, 'NAVEGACIÓN: la vista aérea 2 abre mirando a los lotes (yaw ' + cam.map((v) => v.toFixed(1)).join(', ') + '), sin girar 360°');
   ok(solo(await enc(17), 'verde') && solo(await enc(44), 'naranja') && solo(await enc(19), 'rojo'), 'NAVEGACIÓN: en la vista aérea 2 los lotes conservan su color');
   const c2 = await coloresEnPantalla('05b-colores-vista-2.png');
-  ok(c2.revisados >= 8 && c2.malos.length === 0, 'PANTALLA: en la vista aérea 2 los lotes se VEN con el color de la hoja (' + c2.revisados + ' revisados' + (c2.malos.length ? '; mal: ' + c2.malos.join(', ') : '') + ')');
+  ok(c2.revisados >= 8 && c2.malos.length === 0, 'PANTALLA: en la vista aérea 2 los lotes se VEN con el color de la hoja (' + c2.revisados + ' revisados en ' + c2.segundos + ' s' + (c2.malos.length ? '; mal: ' + c2.malos.join(', ') : '') + ')');
   await p.screenshot({ path: path.join(CAP, '05-otra-vista.png') });
 
   // 7b. Ventanas de la beta: las etiquetas no se montan encima

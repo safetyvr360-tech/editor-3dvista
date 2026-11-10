@@ -72,7 +72,7 @@ a { color: var(--acento); }
 .estados i { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--tinta); }
 
 /* comparador */
-.comparador { position: relative; border-radius: 14px; overflow: hidden; box-shadow: var(--sombra); background: var(--hoja); aspect-ratio: 1440 / 900; max-width: 100%; user-select: none; touch-action: pan-y; }
+.comparador { position: relative; border-radius: 14px; overflow: hidden; box-shadow: var(--sombra); background: var(--hoja); aspect-ratio: 1020 / 412; max-width: 100%; user-select: none; touch-action: pan-y; }
 .comparador img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .comparador .antes { clip-path: inset(0 calc(100% - var(--corte, 50%)) 0 0); }
 .comparador .raya { position: absolute; top: 0; bottom: 0; left: var(--corte, 50%); width: 3px; margin-left: -1.5px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25); pointer-events: none; }
@@ -222,8 +222,8 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
       <li><i style="background: var(--rojo)"></i>Vendido</li>
     </ul>
     <div class="comparador" id="comparador">
-      <img class="despues" src="img/despues.webp" alt="Después: Cayman Creek optimizado, lotes de colores según la hoja y etiquetas nítidas" width="1440" height="900">
-      <img class="antes" src="img/antes.webp" alt="Antes: la misma vista en la exportación original, con la franja vieja y los lotes en blanco" width="1440" height="900">
+      <img class="despues" src="img/despues-comparador.webp" alt="Después: los lotes de Cayman Creek optimizados, de colores según la hoja y con números nítidos" width="1020" height="412">
+      <img class="antes" src="img/antes-comparador.webp" alt="Antes: los mismos lotes en la exportación original, en blanco y sin estado" width="1020" height="412">
       <span class="rotulo r-antes">Antes · exportación</span>
       <span class="rotulo r-despues">Después · motor</span>
       <input type="range" id="corte" min="0" max="100" value="50" aria-label="Mover la línea entre antes y después">

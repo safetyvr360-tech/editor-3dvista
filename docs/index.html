@@ -442,7 +442,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
     <div class="filtros" role="group" aria-label="Filtrar por pantalla">
       <button type="button" id="f-todo" data-f="todo" aria-pressed="true">Todo</button>
       <button type="button" id="f-pc" data-f="pc" aria-pressed="false">Computador</button>
-      <button type="button" id="f-movil" data-f="movil" aria-pressed="false">Teléfono y tablet</button>
+      <button type="button" id="f-movil" data-f="movil" aria-pressed="false">Teléfono</button>
     </div>
     <div class="rejilla" id="rejilla"></div>
   </section>
@@ -674,20 +674,14 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   // ---------- galería
   var piezas = [
     ['01-pantalla-de-carga', 'Pantalla de carga', 'Logo, avance real y la leyenda de colores mientras carga.', 'pc'],
-    ['02-vista-aerea-1', 'Vista aérea 1', 'Lotes pintados según la hoja; manzanas y lugares como etiquetas.', 'pc'],
     ['10-vista-aerea-2', 'Vista aérea 2', 'Abre mirando a los lotes, con el plano completo dibujado.', 'pc'],
     ['03-ficha-lote-disponible', 'Ficha · disponible', 'Área real, rentabilidad, separación y WhatsApp con el lote en el mensaje.', 'pc'],
     ['04-ficha-lote-reservado', 'Ficha · reservado', 'Cambia el llamado: «Lote reservado · pregunte por él».', 'pc'],
     ['05-ficha-lote-vendido', 'Ficha · vendido', 'Ofrece preguntar por lotes disponibles.', 'pc'],
-    ['06-ubicacion', 'Ubicación', 'Las etiquetas se apartan mientras la ventana está abierta.', 'pc'],
     ['07-galeria', 'Galería', 'Álbum de fotos del proyecto.', 'pc'],
     ['08-plano-maestro', 'Plano maestro', 'Plano del loteo dentro del recorrido.', 'pc'],
     ['09-informacion', 'Información', 'Masterplan con las manzanas.', 'pc'],
-    ['11-cartagena', 'Vista Cartagena', 'Vista de contexto con «Volver a la vista aérea».', 'pc'],
-    ['12-telefono', 'Teléfono', 'Versión móvil: los lotes llenan la pantalla.', 'movil', 1],
     ['13-telefono-ficha', 'Teléfono · ficha', 'La ficha cabe completa en la pantalla.', 'movil', 1],
-    ['14-telefono-ventanas', 'Teléfono · ventanas', 'Ubicación, galería, plano e información con su «×» a la vista.', 'movil'],
-    ['15-tablet-horizontal', 'Tablet horizontal', 'Vista aérea y ficha en un iPad acostado.', 'movil']
   ];
   var rejilla = $('#rejilla');
   piezas.forEach(function (p) {

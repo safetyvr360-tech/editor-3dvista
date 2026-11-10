@@ -1,0 +1,37 @@
+[
+  {
+    "file": "google-sheets.svg",
+    "icon": "si:googlesheets",
+    "name": "Google Sheets",
+    "kind": "mono",
+    "source": "simple-icons@16.30.0",
+    "author": "Simple Icons Collaborators",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/simple-icons/simple-icons",
+    "trademark": true,
+    "colour": "one-colour fallback in the brand hex"
+  },
+  {
+    "file": "whatsapp.svg",
+    "icon": "logos:whatsapp-icon",
+    "name": "WhatsApp",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.whatsapp.com/"
+  },
+  {
+    "file": "zip.svg",
+    "icon": "file:file-type-zip",
+    "name": "Zip",
+    "kind": "colour",
+    "source": "@iconify-json/vscode-icons@1.2.30",
+    "author": "Roberto Huertas",
+    "licence": "MIT",
+    "url": "https://github.com/vscode-icons/vscode-icons",
+    "trademark": false
+  }
+]

@@ -58,6 +58,9 @@
   /* piezas del collage del hero */
   .pc-hoja { background: var(--p-bg); border: 1px solid #e3e3e3; padding: 14px 16px; font: 400 14px/1.4 var(--font-text); }
   .pc-hoja .t { display: flex; justify-content: space-between; font: 500 13px/1 var(--font-mono); color: var(--p-muted); margin-bottom: 10px; }
+  .pc-hoja .t { align-items: center; }
+  .app__bar .ttl { display: inline-flex; align-items: center; gap: 10px; color: var(--p-ink); font: 500 14px/1.2 var(--font-text); }
+  .step-head { display: flex; align-items: center; justify-content: space-between; }
   .pc-hoja .f { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid #ececec; font-variant-numeric: tabular-nums; }
   .pc-hoja .f b { font-weight: 500; }
   .pc-lotes { background: var(--p-bg); border: 1px solid #e3e3e3; padding: 14px; }
@@ -78,7 +81,7 @@
   .app > .app__pane + .app__pane { border-left: 1px solid var(--u-line); }
   .app > .app__pane--list::after { content: ""; position: absolute; inset: auto 0 0 0; height: 64px; background: linear-gradient(transparent, var(--u-bg)); pointer-events: none; }
   .app__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--u-line); font: 500 14px/1.2 var(--font-text); }
-  .app__bar span { font: 400 13px/1 var(--font-mono); color: var(--p-muted); }
+  .app__bar > span:last-child { font: 400 13px/1 var(--font-mono); color: var(--p-muted); }
   .app__cols, .app__row { display: grid; grid-template-columns: 64px 92px 1fr auto; gap: 12px; align-items: center; padding: 0 18px; }
   .app__cols { height: 36px; font: 500 13px/1 var(--font-text); color: var(--p-muted); border-bottom: 1px solid var(--u-line); }
   .app__row { height: 52px; border-bottom: 1px solid var(--u-line); font: 400 15px/1.2 var(--font-text); font-variant-numeric: tabular-nums; }
@@ -143,13 +146,16 @@
     .app__pane--list .app__row:nth-of-type(n+6) { display: none; }
   }
   #pasos { --hm: 2; }
+  /* las letras de la frase animada vuelan dentro de su propia sección */
+  #estado { overflow: clip; }
+  @media (max-width: 639px) { #pasos .pc-veredicto dl > :nth-child(-n+4), #pasos .pc-hoja .f:nth-of-type(n+5) { display: none; } }
   @media (max-width: 639px) {
     .ly-collage .pz-c, .ly-collage .pz-g { display: none; }
     .ly-collage .pz-a, .ly-collage .pz-d { height: 100% !important; }
     #editor .frame--split { --ratio: 60%; }
     #preguntas .faq-intro, #preguntas [data-movil="oculto"] { display: none; }
   }
-  @media (max-width: 639px) { .ly-collage .pc-hoja .f { grid-template-columns: 1fr auto; } .ly-collage .pc-hoja .f > span:nth-child(2) { display: none; } #estado .mo-la__type { font-size: 84px; } #estado .mo-la__sub { font-size: 20px; } #pasos .panel { --p-h: 168px; } }
+  @media (max-width: 639px) { .ly-collage .pc-hoja .f { grid-template-columns: 1fr auto; } .ly-collage .pc-hoja .f > span:nth-child(2) { display: none; } #estado .mo-la__type { font-size: 84px; } #estado .mo-la__sub { font-size: 20px; } #pasos .panel { --p-h: 200px; } }
 </style>
 </head>
 <body>
@@ -191,7 +197,7 @@
           <div class="ly-piece pz-a" style="left: 4%; top: 6%; width: 62%; height: 50%"><img src="img/03-ficha-lote-disponible.webp" srcset="img/03-ficha-lote-disponible-720.webp 720w, img/03-ficha-lote-disponible.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" alt="" style="object-position: 50% 45%" data-source="client" data-subject="ficha de un lote disponible sobre el recorrido"></div>
           <div class="ly-piece pz-b" style="left: 70%; top: 30%; width: 26%; height: 66%"><img src="img/13-telefono-ficha.webp" srcset="img/13-telefono-ficha-360.webp 360w, img/13-telefono-ficha.webp 640w" sizes="(max-width: 1023px) 30vw, 180px" width="640" height="1090" alt="" style="object-position: 50% 40%" data-source="client" data-subject="ficha de un lote en el teléfono"></div>
           <div class="ly-piece pz-c pc-hoja ui" style="left: 4%; top: 62%; width: 60%">
-            <div class="t"><span data-en="Status sheet">Hoja de estados</span><span>Google</span></div>
+            <div class="t"><span data-en="Status sheet">Hoja de estados</span><img class="ic ic-20 ic-tall" src="assets/icons/google-sheets.svg" alt="" width="15" height="20"></div>
             <div class="f"><b data-en="Lot 17">Lote 17</b><span>887 m²</span><span class="st st--d" data-en="Available">Disponible</span></div>
             <div class="f"><b data-en="Lot 15">Lote 15</b><span>968 m²</span><span class="st st--r" data-en="Reserved">Reservado</span></div>
             <div class="f"><b data-en="Lot 9">Lote 9</b><span>700 m²</span><span class="st st--v" data-en="Sold">Vendido</span></div>
@@ -225,7 +231,7 @@
       </div>
       <div class="ui app fill" role="img" aria-label="La hoja de estados de Cayman Creek junto al recorrido aéreo con los lotes pintados según esa hoja" data-en-label="The Cayman Creek status sheet beside the aerial tour with the lots painted from that sheet">
         <div class="app__pane app__pane--list">
-          <div class="app__bar"><span class="ttl" data-en="Cayman Creek · Lots">Cayman Creek · Lotes</span><span data-en="read every 15 s">lectura cada 15 s</span></div>
+          <div class="app__bar"><span class="ttl"><img class="ic ic-20 ic-tall" src="assets/icons/google-sheets.svg" alt="" width="15" height="20"><span data-en="Cayman Creek · Lots">Cayman Creek · Lotes</span></span><span data-en="read every 15 s">lectura cada 15 s</span></div>
           <div class="app__cols"><span data-en="Lot">Lote</span><span data-en="Block">Manzana</span><span data-en="Area">Área</span><span data-en="Status">Estado</span></div>
           <div class="app__row"><b>3</b><span>A</span><span>468 m²</span><span class="st st--v" data-en="Sold">Vendido</span></div>
           <div class="app__row"><b>9</b><span>B</span><span>700 m²</span><span class="st st--v" data-en="Sold">Vendido</span></div>
@@ -251,31 +257,33 @@
       </div>
       <div class="grid">
         <article class="card card--row card--open span-4">
-          <span class="step-num">1</span>
+          <span class="step-head"><span class="step-num">1</span><img class="ic ic-20" src="assets/icons/zip.svg" alt="" width="20" height="20"></span>
           <h3 class="t-card" data-en="Upload the 3DVista export">Suba la exportación de 3DVista</h3>
           <p data-en="The platform checks the .zip in your browser and finds every lot.">La plataforma revisa el .zip en su navegador y encuentra cada lote.</p>
           <div class="panel">
             <div class="pc-veredicto ui">
               <span class="ok" data-en="Compatible tour">Recorrido compatible</span>
-              <dl><dt data-en="Lots found">Lotes encontrados</dt><dd>45</dd><dt data-en="Blocks detected">Manzanas detectadas</dt><dd>33 / 45</dd><dt data-en="To review by hand">Por revisar a mano</dt><dd>12</dd></dl>
+              <dl><dt data-en="Size of the .zip">Peso del .zip</dt><dd>82 MB</dd><dt data-en="Aerial views">Vistas aéreas</dt><dd>2</dd><dt data-en="Lots found">Lotes encontrados</dt><dd>45</dd><dt data-en="Lots placed in a block">Lotes con manzana</dt><dd>33 / 45</dd><dt data-en="To review by hand">Por revisar a mano</dt><dd>12</dd></dl>
             </div>
           </div>
         </article>
         <article class="card card--row card--open span-4">
-          <span class="step-num">2</span>
+          <span class="step-head"><span class="step-num">2</span><img class="ic ic-20 ic-tall" src="assets/icons/google-sheets.svg" alt="" width="15" height="20"></span>
           <h3 class="t-card" data-en="Connect the status sheet">Conecte la hoja de estados</h3>
           <p data-en="A Google sheet with the lot and its status. Whoever edits it changes the lot’s colour.">Una hoja de Google con el lote y su estado. Quien la edite cambia el color del lote.</p>
           <div class="panel">
             <div class="pc-hoja ui">
-              <div class="t"><span data-en="lot, status">lote, estado</span><span>CSV</span></div>
+              <div class="t"><span data-en="lot, status">lote, estado</span><img class="ic ic-20 ic-tall" src="assets/icons/google-sheets.svg" alt="" width="15" height="20"></div>
+              <div class="f"><b>40</b><span></span><span class="st st--d" data-en="Available">Disponible</span></div>
               <div class="f"><b>41</b><span></span><span class="st st--d" data-en="Available">Disponible</span></div>
+              <div class="f"><b>43</b><span></span><span class="st st--v" data-en="Sold">Vendido</span></div>
               <div class="f"><b>44</b><span></span><span class="st st--r" data-en="Reserved">Reservado</span></div>
               <div class="f"><b>45</b><span></span><span class="st st--v" data-en="Sold">Vendido</span></div>
             </div>
           </div>
         </article>
         <article class="card card--row card--open span-4">
-          <span class="step-num">3</span>
+          <span class="step-head"><span class="step-num">3</span><img class="ic ic-20" src="assets/icons/whatsapp.svg" alt="" width="20" height="20"></span>
           <h3 class="t-card" data-en="Publish the app">Publique el aplicativo</h3>
           <p data-en="A static site with a card for every lot and a WhatsApp button.">Sale un sitio estático con la ficha de cada lote y botón de WhatsApp.</p>
           <div class="panel"><img class="shot" src="img/04-ficha-lote-reservado.webp" srcset="img/04-ficha-lote-reservado-720.webp 720w, img/04-ficha-lote-reservado.webp 1100w" sizes="(max-width: 1023px) 100vw, 45vw" width="1100" height="688" loading="lazy" alt="La ficha de un lote reservado de Cayman Creek, con su área y el botón de WhatsApp" data-en-alt="The card of a reserved Cayman Creek lot, with its area and the WhatsApp button" data-source="client" data-subject="ficha de lote reservado"></div>
@@ -372,7 +380,7 @@
       <div class="footer__legal">
         <span>&copy; 2026 ULTRAMEDIA</span>
         <div class="socials"></div>
-        <span class="credits" data-en="3DVista and Google are trademarks of their owners">3DVista y Google son marcas de sus dueños</span>
+        <span class="credits" data-en="3DVista, Google Sheets and WhatsApp are trademarks of their owners">3DVista, Google Sheets y WhatsApp son marcas de sus dueños</span>
       </div>
     </div>
   </div>

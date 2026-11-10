@@ -18,9 +18,30 @@ Cambios sobre la exportación (estéticos y de funcionamiento; no agrega fotos n
   - script.js: fuera removeWatermarks (no va a producción); la capa UX lee la hoja de estados.
   - index.htm: pantalla de carga propia y la capa UX (ux/).
 """
-import json, re, shutil, sys
+import json, os, re, shutil, sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+
+# Fuente en negrita para números de lote y logos provisionales. MOTOR_FUENTE permite elegir otra.
+FUENTES_NEGRITA = [
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',          # Linux
+    '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',
+    r'C:\Windows\Fonts\arialbd.ttf',                                  # Windows
+    r'C:\Windows\Fonts\segoeuib.ttf',
+    '/System/Library/Fonts/Supplemental/Arial Bold.ttf',              # macOS
+    '/Library/Fonts/Arial Bold.ttf',
+]
+
+
+def fuente_negrita():
+    """Ruta de una fuente en negrita disponible en este sistema."""
+    propia = os.environ.get('MOTOR_FUENTE')
+    candidatas = ([propia] if propia else []) + FUENTES_NEGRITA
+    for c in candidatas:
+        if Path(c).is_file():
+            return c
+    raise SystemExit('no encontré una fuente en negrita (probé: ' + ', '.join(candidatas)
+                     + '). Indique una con la variable MOTOR_FUENTE.')
 
 AQUI = Path(__file__).resolve().parent
 MOTOR = AQUI.parent
@@ -152,7 +173,7 @@ def apagar(s, ids):
 
 def numeros_nitidos(tour, s, loc, numericos):
     """Regenera las imágenes de los números de lote: blanco grueso con borde, del tamaño original."""
-    fuente = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+    fuente = fuente_negrita()
     hechos = set()
     for tid, texto in numericos:
         i = s.find(f'"id":"{tid}"')
@@ -187,7 +208,7 @@ def numeros_nitidos(tour, s, loc, numericos):
 
 def logo_generico(nombre, redondo):
     """Logo provisional para proyectos sin marca: iniciales en un círculo, o el nombre en blanco."""
-    fuente = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+    fuente = fuente_negrita()
     if redondo:
         im = Image.new('RGBA', (296, 296), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
         d.ellipse((4, 4, 292, 292), fill=(31, 92, 72, 255), outline=(255, 255, 255, 230), width=6)

@@ -56,6 +56,24 @@ async function zipDeCarpeta(dir, raiz) {
   const final = Object.assign({}, despues, vuelta.archivos);
   ok(['script_general.js', 'script_mobile.js', 'locale/es.txt'].every((f) => final[f] === textos[f]), 'IDA Y VUELTA: vender y volver a dejar disponible devuelve los archivos originales byte a byte');
 
+  // 3b. Reservado: mismo polígono encendido, imagen pintada de naranja dentro del mismo archivo
+  const res = E.aplicar(textos, { estados: { 44: 'reservado', 3: 'vendido' } });
+  const conRes = Object.assign({}, textos, res.archivos);
+  const estR = Object.fromEntries(E.lotes(conRes).map((l) => [l.lote, l.estado]));
+  ok(estR[44] === 'reservado' && estR[3] === 'vendido' && estR[4] === 'disponible', 'RESERVADO: al releer, el 44 queda reservado, el 3 vendido y el resto disponible');
+  const imgs = Object.entries(res.imagenes);
+  ok(imgs.length === 2 && imgs.every(([ruta, c]) => c === 'naranja' && /^media\/.+\.webp$/.test(ruta) && conRes['script_general.js'].includes('"url":"' + ruta + '?reservado"')), 'RESERVADO: pide pintar de naranja solo las 2 imágenes del lote 44 (una por vista), marcadas con «?reservado» en la URL');
+  const salirRes = E.aplicar(conRes, { estados: { 44: 'disponible', 3: 'disponible' } });
+  const tras = Object.assign({}, conRes, salirRes.archivos);
+  ok(['script_general.js', 'script_mobile.js'].every((f) => tras[f] === textos[f]) && Object.values(salirRes.imagenes).length === 2 && Object.values(salirRes.imagenes).every((c) => c === 'rojo'), 'RESERVADO · IDA Y VUELTA: al volver a disponible los scripts quedan idénticos al original y las 2 imágenes vuelven a rojo');
+  const v44 = Object.assign({}, textos, E.aplicar(textos, { estados: { 44: 'vendido' } }).archivos);
+  const deVaR = E.aplicar(v44, { estados: { 44: 'reservado' } }), deRaV = E.aplicar(Object.assign({}, v44, deVaR.archivos), { estados: { 44: 'vendido' } });
+  ok(Object.assign({}, v44, deVaR.archivos, deRaV.archivos)['script_general.js'] === v44['script_general.js'] && Object.values(deVaR.imagenes).every((c) => c === 'naranja') && Object.values(deRaV.imagenes).every((c) => c === 'rojo'), 'RESERVADO: de vendido a reservado y de vuelta a vendido, el script queda igual y la imagen va a naranja y vuelve a rojo');
+  const px = new Uint8ClampedArray([200, 0, 0, 100, 128, 128, 128, 255, 0, 0, 0, 0]);
+  E.recolorearPixeles(px, 'naranja'); const naranja = Array.from(px);
+  E.recolorearPixeles(px, 'rojo');
+  ok(naranja.join() === '200,100,0,100,128,128,128,255,0,0,0,0' && Array.from(px).join() === '200,0,0,100,128,128,128,255,0,0,0,0', 'RESERVADO · COLOR: el rojo puro pasa a naranja (tono 30°) y vuelve a rojo; grises y transparentes no se tocan');
+
   // 4. Identidad del .zip
   const t0 = Date.now();
   const sal = await E.rearmar(JSZip, original, r.archivos, 'recorrido/');

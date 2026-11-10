@@ -111,18 +111,25 @@ async function zipDe(nombre, archivos) {
   await p.waitForSelector('#ed-2:not([hidden])', { timeout: 15000 });
   ok((await p.$$eval('#ed-lotes button', (b) => b.length)) === 45, 'EDITOR · EJEMPLO: muestra los 45 lotes de Cayman Creek para marcar');
   await p.click('#ed-lotes button[data-lote="3"]'); await p.click('#ed-lotes button[data-lote="9"]');
-  ok(/2 vendidos nuevos y 0 disponibles nuevos/.test(await p.textContent('#ed-resumen')) && await p.isDisabled('#ed-b-exportar') && await p.isVisible('#ed-nota-ejemplo'), 'EDITOR · EJEMPLO: cuenta los cambios y explica que para descargar hace falta el .zip completo');
+  ok(/2 vendidos nuevos, 0 reservados nuevos y 0 disponibles nuevos/.test(await p.textContent('#ed-resumen')) && await p.isDisabled('#ed-b-exportar') && await p.isVisible('#ed-nota-ejemplo'), 'EDITOR · EJEMPLO: cuenta los cambios y explica que para descargar hace falta el .zip completo');
+  await p.click('.pincel button[data-pincel="reservado"]'); await p.click('#ed-lotes button[data-lote="9"]'); await p.click('#ed-lotes button[data-lote="45"]');
+  ok(/1 vendido nuevo, 2 reservados nuevos y 0 disponibles nuevos/.test(await p.textContent('#ed-resumen')) && (await p.getAttribute('#ed-lotes button[data-lote="9"]', 'data-estado')) === 'reservado', 'EDITOR · TRES ESTADOS: con «Reservado» elegido, el 9 pasa de vendido a reservado y el 45 de disponible a reservado');
+  await p.click('#ed-lotes button[data-lote="45"]');
+  await p.click('.pincel button[data-pincel="disponible"]'); await p.click('#ed-lotes button[data-lote="9"]');
+  ok(/1 vendido nuevo, 0 reservados nuevos y 0 disponibles nuevos/.test(await p.textContent('#ed-resumen')) && (await p.getAttribute('#ed-lotes button[data-lote="45"]', 'data-estado')) === 'disponible', 'EDITOR · TRES ESTADOS: tocar de nuevo un lote con el mismo estado lo devuelve a como venía; reservado → disponible también');
   await p.click('.idioma button[data-idioma="en"]');
-  ok(/Mark lots as sold/.test(await p.textContent('#t-editar')) && /2 newly sold/.test(await p.textContent('#ed-resumen')) && (await p.getAttribute('#editar', 'lang')) === 'en', 'EDITOR · IDIOMA: en inglés cambia títulos, resumen y el idioma de la sección');
+  ok(/Change the status of your lots/.test(await p.textContent('#t-editar')) && /1 newly sold, 0 newly reserved/.test(await p.textContent('#ed-resumen')) && /Reserved/.test(await p.textContent('.pincel')) && (await p.getAttribute('#editar', 'lang')) === 'en', 'EDITOR · IDIOMA: en inglés cambia títulos, estados, resumen y el idioma de la sección');
   await p.click('.idioma button[data-idioma="es-CO"]');
-  ok(/Marque lotes vendidos/.test(await p.textContent('#t-editar')) && !/\btú\b|\btienes\b|\bpuedes\b/i.test(await p.textContent('#editar')), 'EDITOR · IDIOMA: de vuelta en español, tratando de «usted»');
+  ok(/Cambie el estado de sus lotes/.test(await p.textContent('#t-editar')) && !/\btú\b|\btienes\b|\bpuedes\b/i.test(await p.textContent('#editar')), 'EDITOR · IDIOMA: de vuelta en español, tratando de «usted»');
   await p.click('#ed-b-otro');
   const zCompleto = path.join(tmp, 'cayman-completo.zip');
   { const z = new JSZip(); (function andar(rel) { for (const n of fs.readdirSync(path.join(EXP, rel)).sort()) { const r = rel ? rel + '/' + n : n; if (fs.statSync(path.join(EXP, r)).isDirectory()) { z.folder('cayman/' + r); andar(r); } else z.file('cayman/' + r, fs.readFileSync(path.join(EXP, r))); } })(''); fs.writeFileSync(zCompleto, await z.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' })); }
   await p.setInputFiles('#ed-zip', zCompleto);
   await p.waitForSelector('#ed-2:not([hidden])', { timeout: 60000 });
   ok((await p.$$eval('#ed-lotes button', (b) => b.length)) === 45 && !(await p.isDisabled('#ed-b-exportar')), 'EDITOR · .ZIP: abre el .zip completo (' + (fs.statSync(zCompleto).size / 1e6).toFixed(0) + ' MB) en segundo plano y deja descargar');
-  await p.click('#ed-lotes button[data-lote="17"]'); await p.fill('#ed-wa', '573009998877');
+  await p.click('.pincel button[data-pincel="vendido"]'); await p.click('#ed-lotes button[data-lote="17"]');
+  await p.click('.pincel button[data-pincel="reservado"]'); await p.click('#ed-lotes button[data-lote="44"]');
+  await p.fill('#ed-wa', '573009998877');
   const [dzip] = await Promise.all([p.waitForEvent('download', { timeout: 120000 }), p.click('#ed-b-exportar')]);
   const editado = path.join(tmp, 'editado.zip'); await dzip.saveAs(editado);
   await p.waitForSelector('#ed-garantia:not([hidden])');
@@ -131,10 +138,20 @@ async function zipDe(nombre, archivos) {
   ok(nA.length === nB.length && nA.every((n, i) => n === nB[i]), 'EDITOR · .ZIP: el descargado tiene las mismas ' + nA.length + ' entradas, mismos nombres y mismo orden');
   const dif = [];
   for (const n of nA) { if (zA.files[n].dir) continue; const [a, b2] = await Promise.all([zA.file(n).async('nodebuffer'), zB.file(n).async('nodebuffer')]); if (!a.equals(b2)) dif.push(n.replace('cayman/', '')); }
-  ok(dif.sort().join(',') === 'locale/es.txt,script_general.js,script_mobile.js', 'EDITOR · .ZIP: solo cambian por dentro ' + dif.length + ' archivos (' + dif.join(', ') + ')');
+  const difTextos = dif.filter((n) => !/^media\//.test(n)), difImg = dif.filter((n) => /^media\//.test(n));
+  ok(difTextos.sort().join(',') === 'locale/es.txt,script_general.js,script_mobile.js' && difImg.length === 2, 'EDITOR · .ZIP: solo cambian por dentro los 3 archivos de texto y las 2 imágenes del lote reservado (' + dif.length + ' en total)');
   const g = await zB.file('cayman/script_general.js').async('string');
-  ok(/"label":"rojo 17"/.test(g) && require(path.join(RAIZ, 'motor-3dvista', 'editor', 'editar.js')).lotes({ 'script_general.js': g }).find((l) => l.lote === 17).estado === 'vendido', 'EDITOR · .ZIP: el lote 17 queda vendido dentro del archivo');
-  ok(/3\.?059 entradas/.test(await p.textContent('#ed-garantia')), 'EDITOR · .ZIP: la página muestra la garantía (' + (await p.textContent('#ed-garantia')).slice(0, 70) + '…)');
+  const estZip = Object.fromEntries(require(path.join(RAIZ, 'motor-3dvista', 'editor', 'editar.js')).lotes({ 'script_general.js': g }).map((l) => [l.lote, l.estado]));
+  ok(estZip[17] === 'vendido' && estZip[44] === 'reservado' && estZip[1] === 'disponible', 'EDITOR · .ZIP: dentro del archivo el 17 queda vendido, el 44 reservado y el resto como venía');
+  // el color de la imagen del lote reservado, medido en sus píxeles: antes rojo (0°), después naranja (≈30°)
+  const tonos = [];
+  for (const n of difImg) {
+    const pa = path.join(tmp, 'antes-' + path.basename(n) + '.webp'), pb = path.join(tmp, 'despues-' + path.basename(n) + '.webp');
+    fs.writeFileSync(pa, await zA.file('cayman/' + n).async('nodebuffer')); fs.writeFileSync(pb, await zB.file('cayman/' + n).async('nodebuffer'));
+    tonos.push(JSON.parse(execFileSync('python3', ['-I', '-c', 'import sys,json,colorsys\nfrom PIL import Image\nout=[]\nfor f in sys.argv[1:]:\n  im=Image.open(f).convert("RGBA"); px=[p for p in im.getdata() if p[3]>40 and p[0]>p[2]+40]\n  h=sorted(colorsys.rgb_to_hls(r/255,g/255,b/255)[0]*360 for r,g,b,a in px)\n  out.append([round(h[len(h)//2]), im.size])\nprint(json.dumps(out))', pa, pb], { encoding: 'utf8' })));
+  }
+  ok(tonos.length === 2 && tonos.every(([a, d]) => a[0] <= 5 && d[0] >= 24 && d[0] <= 36 && a[1].join() === d[1].join()), 'EDITOR · .ZIP: las imágenes del 44 pasan de rojo a naranja, del mismo tamaño (tonos ' + tonos.map(([a, d]) => a[0] + '°→' + d[0] + '°').join(', ') + ')');
+  ok(/3\.?059 entradas/.test(await p.textContent('#ed-garantia')) && /2 imágenes de lotes/.test(await p.textContent('#ed-garantia')), 'EDITOR · .ZIP: la página muestra la garantía (' + (await p.textContent('#ed-garantia')).slice(0, 140) + '…)');
 
   // 6. Teléfono
   const m = await (await b.newContext({ ...devices['iPhone 13'] })).newPage();

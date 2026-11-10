@@ -164,8 +164,15 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
 .idioma button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
 .lotes-rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 8px; }
 .lote-b { font: 700 1rem/1 var(--f-dato); font-variant-numeric: tabular-nums; padding: 12px 0; border-radius: 10px; border: 2px solid var(--verde); background: color-mix(in srgb, var(--verde) 14%, transparent); color: var(--tinta); cursor: pointer; }
-.lote-b[aria-pressed="true"] { border-color: var(--rojo); background: var(--rojo); color: #fff; }
-.lote-b.cambiado { box-shadow: 0 0 0 3px var(--naranja); }
+.lote-b[data-estado="vendido"] { border-color: var(--rojo); background: var(--rojo); color: #fff; }
+.lote-b[data-estado="reservado"] { border-color: var(--naranja); background: var(--naranja); color: #1a1a1a; }
+.lote-b.cambiado { outline: 3px dashed var(--tinta); outline-offset: 2px; }
+.leyenda-ed i.cambio { background: transparent; outline: 2px dashed var(--tinta); outline-offset: -2px; }
+.pincel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .92rem; }
+.pincel > span { font-weight: 600; margin-right: 4px; }
+.pincel button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 2px solid var(--linea); background: transparent; color: var(--tinta); font: inherit; cursor: pointer; }
+.pincel button i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.pincel button[aria-pressed="true"] { border-color: var(--tinta); font-weight: 700; }
 .leyenda-ed { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .9rem; color: var(--tinta-2); }
 .leyenda-ed i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .garantia { display: grid; gap: 6px; padding: 14px 16px; border-radius: 12px; background: color-mix(in srgb, var(--bien) 12%, transparent); }
@@ -367,7 +374,13 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
     </div>
     <div class="panel" id="ed-2" hidden>
       <h3 id="ed-titulo-lotes"></h3>
-      <div class="leyenda-ed"><span><i style="background:var(--verde)"></i><span data-t="ed.disponible"></span></span><span><i style="background:var(--rojo)"></i><span data-t="ed.vendido"></span></span><span><i style="background:var(--naranja)"></i><span data-t="ed.cambiado"></span></span></div>
+      <div class="pincel" role="group" aria-labelledby="ed-pincel-t">
+        <span id="ed-pincel-t" data-t="ed.marcarComo"></span>
+        <button type="button" data-pincel="disponible" aria-pressed="false"><i style="background:var(--verde)"></i><span data-t="ed.disponible"></span></button>
+        <button type="button" data-pincel="reservado" aria-pressed="false"><i style="background:var(--naranja)"></i><span data-t="ed.reservado"></span></button>
+        <button type="button" data-pincel="vendido" aria-pressed="true"><i style="background:var(--rojo)"></i><span data-t="ed.vendido"></span></button>
+      </div>
+      <div class="leyenda-ed"><span><i class="cambio"></i><span data-t="ed.cambiado"></span></span></div>
       <div class="lotes-rejilla" id="ed-lotes" role="group"></div>
       <div class="form">
         <div class="campo"><label for="ed-wa" data-t="ed.whatsapp"></label><input id="ed-wa" inputmode="numeric"></div>
@@ -704,18 +717,19 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   var TEXTOS = {
     'es-CO': {
       'ed.etiqueta': 'Editar sin tocar el .zip',
-      'ed.titulo': 'Marque lotes vendidos y entregue el mismo recorrido',
-      'ed.entrada': 'Para el cliente que ya tiene su recorrido publicado: los cambios se escriben dentro de los archivos del propio recorrido. No se agrega ninguna capa ni ningún archivo: el .zip sale con las mismas entradas, en el mismo orden.',
+      'ed.titulo': 'Cambie el estado de sus lotes y entregue el mismo recorrido',
+      'ed.entrada': 'Para el cliente que ya tiene su recorrido publicado: los cambios se escriben dentro de los archivos del propio recorrido. No se agrega ninguna capa ni ningún archivo: el .zip sale con las mismas entradas, en el mismo orden. Un lote reservado se pinta de naranja dentro de su misma imagen.',
       'ed.ejemplo': 'Ejemplo', 'ed.ejemploNota': 'Vea cómo se editan los 45 lotes. Para descargar el .zip editado, cargue la exportación completa.',
       'ed.usarEjemplo': 'Editar Cayman Creek de ejemplo', 'ed.suyo': 'Su recorrido', 'ed.suyoTitulo': 'Abrir su .zip',
       'ed.suyoNota': 'Se abre y se rearma en su navegador, en segundo plano: no se sube a ningún lado.',
-      'ed.elegirZip': 'Elegir .zip', 'ed.disponible': 'Disponible', 'ed.vendido': 'Vendido', 'ed.cambiado': 'Cambiado por usted',
+      'ed.elegirZip': 'Elegir .zip', 'ed.disponible': 'Disponible', 'ed.reservado': 'Reservado', 'ed.vendido': 'Vendido', 'ed.cambiado': 'Cambiado por usted',
+      'ed.marcarComo': 'Marcar como:', 'ed.imagenes': '{n} {it} de lotes', 'ed.img1': 'imagen', 'ed.imgN': 'imágenes',
       'ed.whatsapp': 'WhatsApp del recorrido (con indicativo)', 'ed.resumen': 'Cambios',
       'ed.exportar': 'Descargar .zip editado', 'ed.otro': 'Editar otro recorrido',
       'ed.soloEjemplo': 'En el ejemplo no hay .zip completo: cargue el suyo para descargar.',
-      'ed.lotesDe': 'Lotes de {n} · toque un lote para marcarlo vendido o disponible',
+      'ed.lotesDe': 'Lotes de {n} · elija un estado y toque los lotes que quiere cambiar',
       'ed.sinCambios': 'Todavía no ha cambiado nada.',
-      'ed.cambios': '{v} {vt} y {d} {dt}{wa}.', 'ed.v1': 'vendido nuevo', 'ed.vN': 'vendidos nuevos', 'ed.d1': 'disponible nuevo', 'ed.dN': 'disponibles nuevos', 'ed.cambioWa': '; WhatsApp nuevo',
+      'ed.cambios': '{v} {vt}, {r} {rt} y {d} {dt}{wa}.', 'ed.v1': 'vendido nuevo', 'ed.vN': 'vendidos nuevos', 'ed.r1': 'reservado nuevo', 'ed.rN': 'reservados nuevos', 'ed.d1': 'disponible nuevo', 'ed.dN': 'disponibles nuevos', 'ed.cambioWa': '; WhatsApp nuevo',
       'ed.abriendo': 'Abriendo el .zip en segundo plano…', 'ed.rearmando': 'Rearmando el .zip en segundo plano…',
       'ed.garantia': '<b>✓ Mismo recorrido.</b> {n} entradas entraron y {n} salieron, con los mismos nombres y en el mismo orden. Cambiaron por dentro: {archivos}.',
       'ed.loteAria': 'Lote {n}: {estado}',
@@ -724,23 +738,25 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
       'error.zip_ilegible': 'No se pudo abrir el .zip. Verifique que el archivo esté completo.',
       'error.identidad_zip': 'Se canceló la descarga: el .zip no salía idéntico al original.',
       'error.no_se_pudo_rearmar': 'No se pudo rearmar el .zip. Intente de nuevo.',
+      'error.no_se_pudo_pintar': 'No se pudieron pintar las imágenes de los lotes reservados en este navegador. Pruebe con Chrome, Edge o Firefox actualizados.',
       'error.sin_recorrido': 'Primero abra un recorrido.',
       'error.desconocido': 'Algo salió mal. Intente de nuevo.'
     },
     'en': {
       'ed.etiqueta': 'Edit without touching the .zip',
-      'ed.titulo': 'Mark lots as sold and hand back the same tour',
-      'ed.entrada': 'For clients whose tour is already published: changes are written inside the tour’s own files. No layer or file is added: the .zip comes out with the same entries, in the same order.',
+      'ed.titulo': 'Change the status of your lots and hand back the same tour',
+      'ed.entrada': 'For clients whose tour is already published: changes are written inside the tour’s own files. No layer or file is added: the .zip comes out with the same entries, in the same order. A reserved lot is painted orange inside its own image.',
       'ed.ejemplo': 'Example', 'ed.ejemploNota': 'See how the 45 lots are edited. To download the edited .zip, load the full export.',
       'ed.usarEjemplo': 'Edit the Cayman Creek example', 'ed.suyo': 'Your tour', 'ed.suyoTitulo': 'Open your .zip',
       'ed.suyoNota': 'It is opened and rebuilt in your browser, in the background: nothing is uploaded.',
-      'ed.elegirZip': 'Choose .zip', 'ed.disponible': 'Available', 'ed.vendido': 'Sold', 'ed.cambiado': 'Changed by you',
+      'ed.elegirZip': 'Choose .zip', 'ed.disponible': 'Available', 'ed.reservado': 'Reserved', 'ed.vendido': 'Sold', 'ed.cambiado': 'Changed by you',
+      'ed.marcarComo': 'Mark as:', 'ed.imagenes': '{n} lot {it}', 'ed.img1': 'image', 'ed.imgN': 'images',
       'ed.whatsapp': 'Tour WhatsApp (with country code)', 'ed.resumen': 'Changes',
       'ed.exportar': 'Download edited .zip', 'ed.otro': 'Edit another tour',
       'ed.soloEjemplo': 'The example has no full .zip: load yours to download.',
-      'ed.lotesDe': 'Lots of {n} · tap a lot to mark it sold or available',
+      'ed.lotesDe': 'Lots of {n} · choose a status and tap the lots you want to change',
       'ed.sinCambios': 'Nothing has changed yet.',
-      'ed.cambios': '{v} {vt} and {d} {dt}{wa}.', 'ed.v1': 'newly sold', 'ed.vN': 'newly sold', 'ed.d1': 'newly available', 'ed.dN': 'newly available', 'ed.cambioWa': '; new WhatsApp',
+      'ed.cambios': '{v} {vt}, {r} {rt} and {d} {dt}{wa}.', 'ed.v1': 'newly sold', 'ed.vN': 'newly sold', 'ed.r1': 'newly reserved', 'ed.rN': 'newly reserved', 'ed.d1': 'newly available', 'ed.dN': 'newly available', 'ed.cambioWa': '; new WhatsApp',
       'ed.abriendo': 'Opening the .zip in the background…', 'ed.rearmando': 'Rebuilding the .zip in the background…',
       'ed.garantia': '<b>✓ Same tour.</b> {n} entries went in and {n} came out, with the same names in the same order. Changed inside: {archivos}.',
       'ed.loteAria': 'Lot {n}: {estado}',
@@ -749,6 +765,7 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
       'error.zip_ilegible': 'The .zip could not be opened. Check that the file is complete.',
       'error.identidad_zip': 'Download cancelled: the .zip would not have come out identical to the original.',
       'error.no_se_pudo_rearmar': 'The .zip could not be rebuilt. Please try again.',
+      'error.no_se_pudo_pintar': 'This browser could not paint the images of the reserved lots. Try an up-to-date Chrome, Edge or Firefox.',
       'error.sin_recorrido': 'Open a tour first.',
       'error.desconocido': 'Something went wrong. Please try again.'
     }
@@ -766,7 +783,13 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
   document.querySelectorAll('.idioma button').forEach(function (b) { b.addEventListener('click', function () { idioma = b.dataset.idioma; try { localStorage.setItem('editor-idioma', idioma); } catch (e) {} traducir(); }); });
   try { var guardado = localStorage.getItem('editor-idioma'); if (guardado && TEXTOS[guardado]) idioma = guardado; } catch (e) {}
 
-  var ed = { modo: null, nombre: '', lotes: null, original: {}, deseado: {}, waOriginal: '', worker: null, ultimaGarantia: null };
+  var ed = { modo: null, nombre: '', lotes: null, original: {}, deseado: {}, waOriginal: '', worker: null, ultimaGarantia: null, pincel: 'vendido' };
+  document.querySelectorAll('.pincel button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      ed.pincel = b.dataset.pincel;
+      document.querySelectorAll('.pincel button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
   function estadoEd(texto, err) { var e = $('#ed-estado'); e.textContent = texto || ''; e.className = err ? 'estado-carga error' : 'estado-carga'; }
   function worker() {
     if (ed.worker) return ed.worker;
@@ -779,43 +802,53 @@ pre { margin: 0; background: var(--papel); border: 1px solid var(--linea); borde
         var b = new Blob([m.zip], { type: 'application/zip' });
         var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (ed.nombre || 'recorrido') + '-editado.zip';
         document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-        ed.ultimaGarantia = { n: m.entradas, archivos: m.cambiados.join(', ') }; mostrarGarantia(ed.ultimaGarantia);
+        ed.ultimaGarantia = { n: m.entradas, textos: m.cambiados.filter(function (c) { return !/^media\//.test(c); }), imagenes: m.cambiados.filter(function (c) { return /^media\//.test(c); }).length }; mostrarGarantia(ed.ultimaGarantia);
         $('#ed-b-exportar').disabled = false; estadoEd('');
         window.__edExportado = m;
       }
     };
     return ed.worker;
   }
-  function mostrarGarantia(g) { var el = $('#ed-garantia'); el.hidden = false; el.innerHTML = t('ed.garantia', { n: g.n.toLocaleString(idioma), archivos: g.archivos.replace(/[<>&]/g, '') }); }
+  function mostrarGarantia(g) {
+    var partes = g.textos.slice();
+    if (g.imagenes) partes.push(t('ed.imagenes', { n: g.imagenes, it: t(g.imagenes === 1 ? 'ed.img1' : 'ed.imgN') }));
+    var el = $('#ed-garantia'); el.hidden = false; el.innerHTML = t('ed.garantia', { n: g.n.toLocaleString(idioma), archivos: partes.join(', ').replace(/[<>&]/g, '') });
+  }
   function abrirLotes(lotes, wa, modo) {
     ed.modo = modo; ed.lotes = lotes; ed.original = {}; ed.deseado = {}; ed.waOriginal = wa || ''; ed.ultimaGarantia = null;
-    lotes.forEach(function (l) { ed.original[l.lote] = l.estado === 'vendido' ? 'vendido' : 'disponible'; ed.deseado[l.lote] = ed.original[l.lote]; });
+    lotes.forEach(function (l) { ed.original[l.lote] = Editor3DVista.ESTADOS.indexOf(l.estado) >= 0 ? l.estado : 'disponible'; ed.deseado[l.lote] = ed.original[l.lote]; });
     $('#ed-wa').value = wa || '';
     $('#ed-1').hidden = true; $('#ed-2').hidden = false; $('#ed-garantia').hidden = true;
     $('#ed-nota-ejemplo').hidden = modo !== 'ejemplo'; $('#ed-b-exportar').disabled = modo === 'ejemplo';
     pintarLotes(); $('#editar').scrollIntoView({ block: 'start' });
   }
   function cambiosEd() {
-    var estados = {}, v = 0, d = 0;
-    Object.keys(ed.deseado).forEach(function (n) { if (ed.deseado[n] !== ed.original[n]) { estados[n] = ed.deseado[n]; if (ed.deseado[n] === 'vendido') v++; else d++; } });
+    var estados = {}, n = { vendido: 0, reservado: 0, disponible: 0 };
+    Object.keys(ed.deseado).forEach(function (k) { if (ed.deseado[k] !== ed.original[k]) { estados[k] = ed.deseado[k]; n[ed.deseado[k]]++; } });
     var wa = $('#ed-wa').value.replace(/\D/g, '');
-    return { estados: estados, whatsapp: wa && wa !== ed.waOriginal ? wa : '', v: v, d: d };
+    return { estados: estados, whatsapp: wa && wa !== ed.waOriginal ? wa : '', v: n.vendido, r: n.reservado, d: n.disponible };
   }
   function pintarLotes() {
     $('#ed-titulo-lotes').textContent = t('ed.lotesDe', { n: ed.nombre });
     var cont = $('#ed-lotes'); cont.innerHTML = '';
     ed.lotes.forEach(function (l) {
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'lote-b' + (ed.deseado[l.lote] !== ed.original[l.lote] ? ' cambiado' : '');
-      b.textContent = l.lote; b.setAttribute('aria-pressed', String(ed.deseado[l.lote] === 'vendido')); b.dataset.lote = l.lote;
-      b.setAttribute('aria-label', t('ed.loteAria', { n: l.lote, estado: t(ed.deseado[l.lote] === 'vendido' ? 'ed.vendido' : 'ed.disponible') }));
-      b.addEventListener('click', function () { ed.deseado[l.lote] = ed.deseado[l.lote] === 'vendido' ? 'disponible' : 'vendido'; ed.ultimaGarantia = null; $('#ed-garantia').hidden = true; pintarLotes(); });
+      var e = ed.deseado[l.lote];
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lote-b' + (e !== ed.original[l.lote] ? ' cambiado' : '');
+      b.textContent = l.lote; b.dataset.lote = l.lote; b.dataset.estado = e;
+      b.setAttribute('aria-label', t('ed.loteAria', { n: l.lote, estado: t('ed.' + e) }));
+      b.addEventListener('click', function () {
+        // tocar un lote que ya tiene el estado elegido lo devuelve a como venía en el recorrido
+        ed.deseado[l.lote] = ed.deseado[l.lote] === ed.pincel ? ed.original[l.lote] : ed.pincel;
+        ed.ultimaGarantia = null; $('#ed-garantia').hidden = true; pintarLotes();
+        var de = cont.querySelector('[data-lote="' + l.lote + '"]'); if (de) de.focus();
+      });
       cont.appendChild(b);
     });
     resumenEd();
   }
   function resumenEd() {
     var c = cambiosEd();
-    $('#ed-resumen').textContent = c.v || c.d || c.whatsapp ? t('ed.cambios', { v: c.v, d: c.d, vt: t(c.v === 1 ? 'ed.v1' : 'ed.vN'), dt: t(c.d === 1 ? 'ed.d1' : 'ed.dN'), wa: c.whatsapp ? t('ed.cambioWa') : '' }) : t('ed.sinCambios');
+    $('#ed-resumen').textContent = c.v || c.r || c.d || c.whatsapp ? t('ed.cambios', { v: c.v, r: c.r, d: c.d, vt: t(c.v === 1 ? 'ed.v1' : 'ed.vN'), rt: t(c.r === 1 ? 'ed.r1' : 'ed.rN'), dt: t(c.d === 1 ? 'ed.d1' : 'ed.dN'), wa: c.whatsapp ? t('ed.cambioWa') : '' }) : t('ed.sinCambios');
   }
   $('#ed-wa').addEventListener('input', resumenEd);
   $('#ed-b-ejemplo').addEventListener('click', function () {

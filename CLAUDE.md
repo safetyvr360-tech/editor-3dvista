@@ -13,8 +13,11 @@ plataforma web (`docs/`, GitHub Pages) con Cayman Creek como ejemplo del proceso
   quita piel vieja, estados en vivo desde hoja de Google).
 - **Editar** `motor-3dvista/editor/editar.js`: identidad del .zip (ADR-001 opción B): mismas entradas,
   mismo orden. Vendido = `"enabled":true` + `"rollOverDisplay":false` en los overlays «rojo N»;
-  disponible = al revés (ida y vuelta byte a byte). Cayman: 3.059 entran / 3.059 salen, cambian solo
-  `locale/es.txt`, `script_general.js`, `script_mobile.js`. En el navegador corre en `docs/editar-worker.js`.
+  disponible = al revés (ida y vuelta byte a byte). Reservado = encendido como vendido + URL de la imagen
+  con `?reservado` + la imagen del polígono pintada de naranja en el mismo archivo (el worker la pinta con
+  OffscreenCanvas; al salir de reservado vuelve a rojo: script idéntico, imagen igual a la vista pero no
+  byte a byte). Cayman: 3.059 entran / 3.059 salen, cambian solo `locale/es.txt`, `script_general.js`,
+  `script_mobile.js` (+ 2 imágenes por lote reservado). En el navegador corre en `docs/editar-worker.js`.
 
 ## Reglas
 - `motor-3dvista/` no puede llevar nombres ni datos de ningún proyecto (la prueba del motor lo revisa).
@@ -22,7 +25,9 @@ plataforma web (`docs/`, GitHub Pages) con Cayman Creek como ejemplo del proceso
 - `docs/analizar.js` y `docs/editar.js` son copias: se regeneran con `herramientas/publicar-docs.py`, no editarlas a mano.
 - Zips con JSZip usando `createFolders:false` (si no, agrega entradas de carpeta y rompe la identidad).
 - La exportación original (fotos) no se sube al repo. En el PC del usuario está en
-  `F:\cayman descargado\caymanCreek3dvista-main` (y `.zip`).
+  `F:\cayman descargado\caymanCreek3dvista-main\caymanCreek3dvista-main` (carpeta anidada; y el `.zip`).
+- En Windows: Python 3.12 (con `python3.exe` copiado junto a `python.exe`) y Pillow; jszip y playwright
+  están fuera del repo en `03-EDITOR\herramientas-pruebas` → usar `NODE_PATH=<esa carpeta>\node_modules`.
 
 ## Probar (todo debe quedar en verde)
 ```text

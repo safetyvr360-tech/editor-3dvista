@@ -8,9 +8,18 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="EDITOR: app de venta de lotes en recorridos 3DVista">
 <meta property="og:description" content="Los lotes de su recorrido 3DVista en verde, naranja o rojo, actualizados desde una hoja de Google en 15 segundos.">
-<meta property="og:image" content="share.jpg">
+<meta property="og:url" content="https://safetyvr360-tech.github.io/editor-3dvista/producto/">
+<meta property="og:image" content="https://safetyvr360-tech.github.io/editor-3dvista/producto/share.jpg">
+<meta property="og:image:width" content="1440">
+<meta property="og:image:height" content="900">
+<meta property="og:locale" content="es_CO">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:image" content="https://safetyvr360-tech.github.io/editor-3dvista/producto/share.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" as="image" href="img/03-ficha-lote-disponible.webp" imagesrcset="img/03-ficha-lote-disponible-720.webp 720w, img/03-ficha-lote-disponible.webp 1100w" imagesizes="(max-width: 1023px) 100vw, 45vw">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"EDITOR","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Convierte la exportación web de 3DVista en un aplicativo de venta de lotes: cada lote muestra si está disponible, reservado o vendido según una hoja de Google.","url":"https://safetyvr360-tech.github.io/editor-3dvista/producto/","inLanguage":["es-CO","en"],"publisher":{"@type":"Organization","name":"ULTRAMEDIA","email":"ultramediaco1@gmail.com"}}</script>
 <meta name="theme-color" content="#ffffff">
 <!-- <link rel="canonical" href="https://[dominio del cliente]/"> : falta el dominio de ULTRAMEDIA -->
 <meta name="site-kind" content="software">
@@ -125,6 +134,8 @@
   @media (min-width: 1024px) and (max-width: 1279px) { .par img { aspect-ratio: 3 / 2; } }
   @media (max-width: 639px) { .par { grid-template-columns: 1fr; gap: var(--s-4); } }
 
+  @media (min-width: 1024px) { .idioma-hoja { display: none; } }
+  .idioma-pie { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; }
   .idioma-b { font: 500 15px/1 var(--font-text); background: none; border: 0; padding: 0 8px; min-height: 44px; color: var(--ink); cursor: pointer; }
   /* una sola altura para la acción principal en toda la página */
   .hero--triptych .hero__cta .btn { height: var(--btn-h); font: 500 16px/1 var(--font-text); letter-spacing: 0; padding-inline: var(--s-5); }
@@ -143,6 +154,10 @@
     .ly-collage .pz-a, .ly-collage .pz-d { left: 0 !important; top: 0 !important; width: 100% !important; height: 56% !important; }
     .ly-collage .pz-c, .ly-collage .pz-g { left: 0 !important; top: 62% !important; width: 49% !important; height: auto !important; }
     .ly-collage .pz-b, .ly-collage .pz-e, .ly-collage .pz-f { display: none; }
+    .ly-collage .pz-b, .ly-collage .pz-e { left: 51% !important; top: 62% !important; width: 49% !important; height: 38% !important; }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .ly-collage .pz-b, .ly-collage .pz-e { display: block; }
     .app__pane--list .app__row:nth-of-type(n+6) { display: none; }
   }
   #pasos { --hm: 2; }
@@ -174,9 +189,10 @@
       <div class="nav__item"><a class="nav__link" href="#editor">Editor</a></div>
       <div class="nav__item"><a class="nav__link" href="#antes" data-en="Before and after">Antes y después</a></div>
       <div class="nav__item"><a class="nav__link" href="#preguntas" data-en="Questions">Preguntas</a></div>
+      <div class="nav__item idioma-hoja"><button class="nav__link idioma-b" type="button" data-idioma-b lang="en" data-en="Español">English</button></div>
     </nav>
     <div class="nav__actions">
-      <button class="nav__link idioma-b" type="button" id="idioma" lang="en" aria-label="Read this page in English" data-en-label="Leer esta página en español" data-en="ES">EN</button>
+      <button class="nav__link idioma-b" type="button" id="idioma" data-idioma-b lang="en" aria-label="Read this page in English" data-en-label="Leer esta página en español" data-en="ES">EN</button>
       <a class="btn btn--primary" href="../index.html#probador" data-en="Try your tour">Pruebe su recorrido</a>
     </div>
     <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menú" data-en-label="Menu">
@@ -378,7 +394,7 @@
         <div class="span-2 footer__col"><h3 data-en="Contact">Contacto</h3><ul><li><a href="#preguntas" data-en="Questions">Preguntas</a></li><li><a href="mailto:ultramediaco1@gmail.com?subject=EDITOR" data-en="Email us">Escríbanos un correo</a></li></ul></div>
       </div>
       <div class="footer__legal">
-        <span>&copy; 2026 ULTRAMEDIA</span>
+        <span>&copy; 2026 ULTRAMEDIA &nbsp; <button class="link idioma-pie" type="button" data-idioma-b lang="en" data-en="Español">English</button></span>
         <div class="socials"></div>
         <span class="credits" data-en="3DVista, Google Sheets and WhatsApp are trademarks of their owners">3DVista, Google Sheets y WhatsApp son marcas de sus dueños</span>
       </div>
@@ -393,7 +409,7 @@
 <!-- idioma: es-CO por defecto; el botón EN/ES cambia los textos marcados con data-en -->
 <script>
 (function () {
-  var b = document.getElementById('idioma'), en = false;
+  var bs = document.querySelectorAll('[data-idioma-b]'), en = false, titulos = {};
   function cambiar(aEn) {
     en = aEn;
     document.documentElement.lang = en ? 'en' : 'es-CO';
@@ -410,10 +426,14 @@
       if (el.dataset.esAlt === undefined) el.dataset.esAlt = el.alt;
       el.alt = en ? el.dataset.enAlt : el.dataset.esAlt;
     });
-    b.lang = en ? 'es' : 'en';
+    bs.forEach(function (x) { x.lang = en ? 'es' : 'en'; });
+    var md = document.querySelector('meta[name="description"]');
+    if (!titulos.es) { titulos.es = document.title; titulos.esD = md.content; }
+    document.title = en ? 'EDITOR: lot sales app for 3DVista tours' : titulos.es;
+    md.content = en ? 'EDITOR turns a 3DVista web export into a sales app: every lot shows whether it is available, reserved or sold from a Google sheet.' : titulos.esD;
     try { localStorage.setItem('editor-idioma', en ? 'en' : 'es-CO'); } catch (e) {}
   }
-  b.addEventListener('click', function () { cambiar(!en); });
+  bs.forEach(function (x) { x.addEventListener('click', function () { cambiar(!en); }); });
   try { if (localStorage.getItem('editor-idioma') === 'en') cambiar(true); } catch (e) {}
 })();
 </script>

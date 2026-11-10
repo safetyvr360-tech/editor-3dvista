@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<script type="module">
+import * as THREE from './three.module.js';
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1440, H = +q.get('h') || 900, cual = q.get('cual') || 'antes';
+const yaw0 = +q.get('yaw'), pitch0 = +q.get('pitch'), hfov = +q.get('hfov') || 100;
+const caras = (q.get('caras') || 'l,r,u180,d180,b,f').split(',');            // orden px,nx,py,ny,pz,nz
+const ren = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+ren.setSize(W, H); ren.setPixelRatio(1); ren.outputColorSpace = THREE.SRGBColorSpace; document.body.appendChild(ren.domElement);
+const escena = new THREE.Scene(); const capa = new THREE.Group(); if (q.get("espejo") === "1") capa.scale.x = -1; escena.add(capa);
+const R = 500, D = 50;
+const dir = (yaw, pitch) => { const y = THREE.MathUtils.degToRad(yaw), p = THREE.MathUtils.degToRad(pitch); return new THREE.Vector3(Math.sin(y) * Math.cos(p), Math.sin(p), -Math.cos(y) * Math.cos(p)); };
+const carga = (u) => new Promise((ok, mal) => new THREE.TextureLoader().load(u, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; ok(t); }, undefined, mal));
+(async () => {
+  const cub = await new Promise((ok) => new THREE.CubeTextureLoader().load(caras.map((c) => (q.get('dir') || 'caras') + '/' + c + '.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; ok(t); }));
+  escena.background = cub;
+  const spec = await (await fetch('spec.json')).json();
+  let orden = 0;
+  for (const p of (spec[cual] || [])) {
+    const tex = await carga(p.img); tex.wrapS = THREE.RepeatWrapping; if (q.get("voltear") === "1") tex.repeat.x = -1;
+    let geo;
+    if (q.get("modo") !== "esfera") {
+      // lámina de frente al centro: ancho y alto por la tangente de los ángulos, derecha y arriba como las ve la cámara
+      const c = dir(p.yaw, p.pitch), r = new THREE.Vector3().crossVectors(c, new THREE.Vector3(0, 1, 0)).normalize(), u = new THREE.Vector3().crossVectors(r, c).normalize();
+      const w = D * Math.tan(THREE.MathUtils.degToRad(p.hfov / 2)), h = D * Math.tan(THREE.MathUtils.degToRad(p.vfov / 2)), o = c.clone().multiplyScalar(D);
+      const P = (sx, sy) => o.clone().add(r.clone().multiplyScalar(sx * w)).add(u.clone().multiplyScalar(sy * h));
+      const v = [P(-1, 1), P(1, 1), P(-1, -1), P(1, -1)];
+      geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(v.flatMap((x) => [x.x, x.y, x.z]), 3));
+      geo.setAttribute("uv", new THREE.Float32BufferAttribute([0, 1, 1, 1, 0, 0, 1, 0], 2)); geo.setIndex([0, 2, 1, 2, 3, 1]);
+    } else {
+      const phiStart = THREE.MathUtils.degToRad(-(p.yaw + p.hfov / 2) - 90), thetaStart = THREE.MathUtils.degToRad(90 - (p.pitch + p.vfov / 2));
+      geo = new THREE.SphereGeometry(D, 24, 12, phiStart, THREE.MathUtils.degToRad(p.hfov), thetaStart, THREE.MathUtils.degToRad(p.vfov));
+    }
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide }));
+    m.renderOrder = ++orden; capa.add(m);
+  }
+  const cam = new THREE.PerspectiveCamera(2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(hfov / 2)) * H / W)), W / H, 0.1, 2000);
+  const mira = dir(yaw0, pitch0); cam.up.set(0, 1, 0); cam.lookAt(mira);
+  ren.render(escena, cam); window.__listo = true;
+})();
+</script></body></html>

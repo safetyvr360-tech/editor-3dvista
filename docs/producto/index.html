@@ -134,7 +134,7 @@
 
   /* antes y después */
   .par { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin-top: var(--s-7); }
-  .par img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: var(--r-lg); display: block; }
+  .par img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; object-position: 50% 72%; border-radius: var(--r-lg); display: block; }
   @media (min-width: 1024px) and (max-width: 1279px) { .par img { aspect-ratio: 3 / 2; } }
   @media (max-width: 639px) { .par { grid-template-columns: 1fr; gap: var(--s-4); } }
 
@@ -350,11 +350,11 @@
     <div class="wrap">
       <div class="grid">
         <h2 class="span-5" id="antes-h" data-en="Before and after in Cayman Creek">Antes y después en Cayman Creek</h2>
-        <p class="span-6 start-7" data-en="Left, the lots as 3DVista exports them. Right, the same lots in the EDITOR app, painted by their status.">A la izquierda, los lotes como los exporta 3DVista. A la derecha, los mismos lotes en el aplicativo de EDITOR, pintados según su estado.</p>
+        <p class="span-6 start-7" data-en="Left, the aerial view as 3DVista exports it. Right, the same view in the EDITOR app, with every lot painted by its status.">A la izquierda, la vista aérea como la exporta 3DVista. A la derecha, la misma vista en el aplicativo de EDITOR, con cada lote pintado según su estado.</p>
       </div>
       <div class="par">
-        <img src="img/antes-lotes.webp" srcset="img/antes-lotes-720.webp 720w, img/antes-lotes.webp 1000w" sizes="(max-width: 639px) 100vw, (max-width: 1279px) 75vw, 50vw" width="1000" height="400" alt="Los lotes 15, 16 y 41 a 44 de Cayman Creek como salen de 3DVista, sin estado" data-en-alt="Cayman Creek lots 15, 16 and 41 to 44 as exported by 3DVista, with no status" data-source="client" data-subject="recorrido exportado" loading="lazy">
-        <img src="img/despues-lotes.webp" srcset="img/despues-lotes-720.webp 720w, img/despues-lotes.webp 1000w" sizes="(max-width: 639px) 100vw, (max-width: 1279px) 75vw, 50vw" width="1000" height="400" alt="La misma vista en el aplicativo de EDITOR, con los lotes en verde, naranja y rojo" data-en-alt="The same view in the EDITOR app, with lots in green, orange and red" data-source="client" data-subject="aplicativo de venta" loading="lazy">
+        <img src="img/antes-vista.webp" srcset="img/antes-vista-720.webp 720w, img/antes-vista.webp 1440w" sizes="(max-width: 639px) 100vw, (max-width: 1279px) 75vw, 50vw" width="1440" height="900" alt="La vista aérea de Cayman Creek como la exporta 3DVista, con los lotes en blanco y sin estado" data-en-alt="The Cayman Creek aerial view as 3DVista exports it, with lots in white and no status" data-source="client" data-subject="recorrido exportado" loading="lazy">
+        <img src="img/despues-vista.webp" srcset="img/despues-vista-720.webp 720w, img/despues-vista.webp 1440w" sizes="(max-width: 639px) 100vw, (max-width: 1279px) 75vw, 50vw" width="1440" height="900" alt="La misma vista en el aplicativo de EDITOR, con los lotes en verde y los vendidos en rojo" data-en-alt="The same view in the EDITOR app, with available lots in green and sold lots in red" data-source="client" data-subject="aplicativo de venta" loading="lazy">
       </div>
     </div>
   </section>
